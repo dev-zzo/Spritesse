@@ -23,10 +23,19 @@ namespace ThreeSheeps.Spritesse.Content
         /// </summary>
         /// <param name="spriteSheets"></param>
         /// <param name="tiles"></param>
-        public TileMap(Point tileSize, SpriteSheet[] spriteSheets, Tile[,] tiles)
+        internal TileMap(Point tileSize, SpriteSheet[] spriteSheets, Tile[,] tiles)
         {
+            this.tileSize = tileSize;
             this.spriteSheets = spriteSheets;
             this.tiles = tiles;
+        }
+
+        /// <summary>
+        /// Dimensions of the tile map, in tiles
+        /// </summary>
+        public Point Dimensions
+        {
+            get { return new Point(this.tiles.GetLength(1), this.tiles.GetLength(0)); }
         }
 
         /// <summary>
@@ -46,11 +55,11 @@ namespace ThreeSheeps.Spritesse.Content
         }
 
         /// <summary>
-        /// Tile array
+        /// Access the tile
         /// </summary>
-        public Tile[,] Tiles
+        public Tile GetTile(int x, int y)
         {
-            get { return this.tiles; }
+            return this.tiles[y, x];
         }
 
         private Point tileSize;
