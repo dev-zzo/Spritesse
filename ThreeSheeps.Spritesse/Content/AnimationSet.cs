@@ -24,7 +24,7 @@ namespace ThreeSheeps.Spritesse.Content
     /// </summary>
     public sealed class AnimationSequence
     {
-        public AnimationSequence(string name, bool looped, AnimationFrame[] frames)
+        internal AnimationSequence(string name, bool looped, AnimationFrame[] frames)
         {
             this.Name = name;
             this.Looped = looped;
@@ -52,7 +52,7 @@ namespace ThreeSheeps.Spritesse.Content
     /// </summary>
     public sealed class AnimationSet
     {
-        public AnimationSet(SpriteSheet spriteSheet, AnimationSequence[] animations)
+        internal AnimationSet(SpriteSheet spriteSheet, AnimationSequence[] animations)
         {
             this.SpriteSheet = spriteSheet;
             this.animations = animations;

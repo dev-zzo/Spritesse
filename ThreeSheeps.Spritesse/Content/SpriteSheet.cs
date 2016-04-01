@@ -10,7 +10,7 @@ namespace ThreeSheeps.Spritesse.Content
     /// </summary>
     public sealed class SpriteDefinition
     {
-        public SpriteDefinition(Rectangle sourceRectangle, Point pivotOffset)
+        internal SpriteDefinition(Rectangle sourceRectangle, Point pivotOffset)
         {
             this.SourceRectangle = sourceRectangle;
             this.PivotOffset = pivotOffset;
@@ -35,7 +35,7 @@ namespace ThreeSheeps.Spritesse.Content
         /// <summary>
         /// Constructor available only within this assembly
         /// </summary>
-        public SpriteSheet(Texture2D texture, SpriteDefinition[] definitions)
+        internal SpriteSheet(Texture2D texture, SpriteDefinition[] definitions)
         {
             this.Texture = texture;
             this.definitions = definitions;
