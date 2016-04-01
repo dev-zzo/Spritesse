@@ -15,7 +15,7 @@ namespace ThreeSheeps.Spritesse
         }
 
         /// <summary>
-        /// A camera offset for layers that make use of it
+        /// Camera offset: the position of the upper left pixel of the visible area
         /// </summary>
         public Vector2 CameraOffset { get; set; }
 
