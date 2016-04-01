@@ -9,7 +9,7 @@ namespace ThreeSheeps.Spritesse
     /// </summary>
     public class BasicSpriteLayer : SpriteLayer
     {
-        public BasicSpriteLayer(SpriteManager manager, string name, float depth = 0.0f)
+        public BasicSpriteLayer(SpriteManager manager, string name, float depth)
             : base(manager, name, depth)
         {
         }

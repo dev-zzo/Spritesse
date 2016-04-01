@@ -16,7 +16,7 @@ namespace ThreeSheeps.Spritesse
         /// <param name="manager">SpriteManager instance to bind to</param>
         /// <param name="name">Layer name</param>
         /// <param name="depth">Layer depth</param>
-        public SpriteLayer(SpriteManager manager, string name, float depth = 0.0f)
+        public SpriteLayer(SpriteManager manager, string name, float depth)
         {
             if (depth > 1.0f || depth < 0.0f)
             {
