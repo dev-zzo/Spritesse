@@ -49,14 +49,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnimationSet.cs" />
+    <Compile Include="AnimationSetContent.cs" />
     <Compile Include="AnimationSetImporter.cs" />
     <Compile Include="AnimationSetProcessor.cs" />
     <Compile Include="AnimationSetWriter.cs" />
     <Compile Include="SpriteSheetImporter.cs" />
     <Compile Include="SpriteSheetProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SpriteSheet.cs" />
+    <Compile Include="SpriteSheetContent.cs" />
     <Compile Include="SpriteSheetWriter.cs" />
     <Compile Include="TileMapContent.cs" />
     <Compile Include="TileMapImporter.cs" />

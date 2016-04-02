@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework.Content;
 
 namespace ThreeSheeps.Spritesse.PipelineExts
 {
@@ -12,15 +13,17 @@ namespace ThreeSheeps.Spritesse.PipelineExts
     [Serializable]
     public sealed class AnimationSequence
     {
-        public string Name { get; set; }
-        public bool Looped { get; set; }
-        public AnimationFrame[] Frames { get; set; }
+        public string Name;
+        public bool Looped;
+        public AnimationFrame[] Frames;
     }
 
     [Serializable]
-    public sealed class AnimationSet
+    public sealed class AnimationSetContent
     {
-        public string SpriteSheetName { get; set; }
-        public AnimationSequence[] Animations { get; set; }
+        public string SpriteSheet;
+
+        [ContentSerializer(CollectionItemName = "Sequence")]
+        public AnimationSequence[] Animations;
     }
 }

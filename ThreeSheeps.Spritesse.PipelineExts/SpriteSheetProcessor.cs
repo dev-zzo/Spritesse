@@ -8,9 +8,9 @@ namespace ThreeSheeps.Spritesse.PipelineExts
     /// Handles sprite sheets.
     /// </summary>
     [ContentProcessor(DisplayName = "Sprite Sheet Processor - ThreeSheeps")]
-    public class SpriteSheetProcessor : ContentProcessor<SpriteSheet, SpriteSheet>
+    public class SpriteSheetProcessor : ContentProcessor<SpriteSheetContent, SpriteSheetContent>
     {
-        public override SpriteSheet Process(SpriteSheet input, ContentProcessorContext context)
+        public override SpriteSheetContent Process(SpriteSheetContent input, ContentProcessorContext context)
         {
             // NULL processor
             return input;

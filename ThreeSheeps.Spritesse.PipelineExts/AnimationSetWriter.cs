@@ -5,11 +5,11 @@ using ThreeSheeps.Spritesse.Content;
 namespace ThreeSheeps.Spritesse.PipelineExts
 {
     [ContentTypeWriter]
-    public class AnimationSetWriter : ContentTypeWriter<AnimationSet>
+    public class AnimationSetWriter : ContentTypeWriter<AnimationSetContent>
     {
-        protected override void Write(ContentWriter output, AnimationSet value)
+        protected override void Write(ContentWriter output, AnimationSetContent value)
         {
-            output.Write(value.SpriteSheetName);
+            output.Write(value.SpriteSheet);
             output.Write(value.Animations.Length);
             foreach (AnimationSequence seq in value.Animations)
             {

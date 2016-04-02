@@ -6,9 +6,9 @@ using ThreeSheeps.Spritesse.Content;
 namespace ThreeSheeps.Spritesse.PipelineExts
 {
     [ContentTypeWriter]
-    public class SpriteSheetWriter : ContentTypeWriter<SpriteSheet>
+    public class SpriteSheetWriter : ContentTypeWriter<SpriteSheetContent>
     {
-        protected override void Write(ContentWriter output, SpriteSheet value)
+        protected override void Write(ContentWriter output, SpriteSheetContent value)
         {
             output.Write(value.TextureName);
             output.Write(value.Definitions.Length);

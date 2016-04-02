@@ -12,7 +12,7 @@ namespace ThreeSheeps.Spritesse.PipelineExts
     }
 
     [Serializable]
-    public sealed class SpriteSheet
+    public sealed class SpriteSheetContent
     {
         public string TextureName { get; set; }
 

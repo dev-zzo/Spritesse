@@ -6,9 +6,9 @@ namespace ThreeSheeps.Spritesse.PipelineExts
     /// Handles animation sets.
     /// </summary>
     [ContentProcessor(DisplayName = "Animation Set Processor - ThreeSheeps")]
-    public class AnimationSetProcessor : ContentProcessor<AnimationSet, AnimationSet>
+    public class AnimationSetProcessor : ContentProcessor<AnimationSetContent, AnimationSetContent>
     {
-        public override AnimationSet Process(AnimationSet input, ContentProcessorContext context)
+        public override AnimationSetContent Process(AnimationSetContent input, ContentProcessorContext context)
         {
             // NULL processor
             return input;
