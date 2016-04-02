@@ -5,6 +5,7 @@ This project contains various content pipeline extensions to handle custom conte
 ## Sprite sheets
 
 This is metadata for a texture atlas containing multiple sprites; each definition provides the location and size of a sprite.
+The pivot offset is the location of the (0, 0) point within the sprite.
 
 The engine type is `ThreeSheeps.Spritesse.Content.SpriteSheet`.
 
