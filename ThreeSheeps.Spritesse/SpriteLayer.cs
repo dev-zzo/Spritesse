@@ -33,7 +33,7 @@ namespace ThreeSheeps.Spritesse
         /// </summary>
         public SpriteManager SpriteManager
         {
-            get { return this.SpriteManager; }
+            get { return this.manager; }
         }
 
         /// <summary>
