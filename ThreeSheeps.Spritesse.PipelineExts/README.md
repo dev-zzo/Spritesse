@@ -81,7 +81,37 @@ Content files should have the `.animset` extension.
 </XnaContent>
 ```
 
+## Tile maps
+
+These are layers built from multiple tiles. Multiple sprite sheets can be referenced.
+
+The engine type is `ThreeSheeps.Spritesse.Content.TileMap`.
+
+Content files should have the `.tilemap` extension.
+
+### Example data
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+  <Asset Type="ThreeSheeps.Spritesse.PipelineExts.TileMapContent">
+    <TileSize>16 16</TileSize>
+    <SpriteSheets>
+      <Item>Sprites/tileset_0</Item>
+    </SpriteSheets>
+    <TileRows>
+      <Row>0:55 0:56 0:57 0:58</Row>
+      <Row>0:58 0:78 0:80 0:55</Row>
+      <Row>0:55 0:105 0:107 0:55</Row>
+      <Row>0:55 0:105 0:107 0:55</Row>
+    </TileRows>
+  </Asset>
+</XnaContent>
+```
+
 # References
+
+These are mainly for technical stuff.
 
 * https://blogs.msdn.microsoft.com/shawnhar/2008/08/12/everything-you-ever-wanted-to-know-about-intermediateserializer/
 * https://blogs.msdn.microsoft.com/shawnhar/2008/08/26/customizing-intermediateserializer-part-1/
