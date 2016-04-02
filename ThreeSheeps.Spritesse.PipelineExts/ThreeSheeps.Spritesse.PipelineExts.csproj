@@ -58,6 +58,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpriteSheet.cs" />
     <Compile Include="SpriteSheetWriter.cs" />
+    <Compile Include="TileMapContent.cs" />
+    <Compile Include="TileMapImporter.cs" />
+    <Compile Include="TileMapProcessor.cs" />
+    <Compile Include="TileMapWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ThreeSheeps.Spritesse\ThreeSheeps.Spritesse.csproj">

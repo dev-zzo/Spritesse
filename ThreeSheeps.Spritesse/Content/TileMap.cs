@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using System;
 
 namespace ThreeSheeps.Spritesse.Content
 {
@@ -9,7 +10,19 @@ namespace ThreeSheeps.Spritesse.Content
     /// </summary>
     public struct Tile
     {
+        /// <summary>
+        /// Used to indicate that the tile is empty.
+        /// </summary>
+        public const ushort EMPTY_TILE = UInt16.MaxValue;
+
+        /// <summary>
+        /// Index of a spite sheet to use.
+        /// </summary>
         public ushort SheetIndex;
+
+        /// <summary>
+        /// Index of a sprite in the sprite sheet.
+        /// </summary>
         public ushort SpriteIndex;
     }
 
@@ -71,7 +84,35 @@ namespace ThreeSheeps.Spritesse.Content
     {
         protected override TileMap Read(ContentReader input, TileMap existingInstance)
         {
-            throw new System.NotImplementedException();
+            Point tileSize;
+            tileSize.X = input.ReadInt32();
+            tileSize.Y = input.ReadInt32();
+            SpriteSheet[] spriteSheets = new SpriteSheet[input.ReadByte()];
+            for (int i = 0; i < spriteSheets.Length; ++i)
+            {
+                string name = input.ReadString();
+                spriteSheets[i] = input.ContentManager.Load<SpriteSheet>(name);
+            }
+            int rowCount = input.ReadInt32();
+            int colCount = input.ReadInt32();
+            Tile[,] tiles = new Tile[rowCount, colCount];
+            for (int row = 0; row < rowCount; ++row)
+            {
+                for (int col = 0; col < colCount; ++col)
+                {
+                    byte sheetIndex = input.ReadByte();
+                    if (sheetIndex != byte.MaxValue)
+                    {
+                        tiles[row, col].SheetIndex = sheetIndex;
+                        tiles[row, col].SpriteIndex = input.ReadUInt16();
+                    }
+                    else
+                    {
+                        tiles[row, col].SheetIndex = Tile.EMPTY_TILE;
+                    }
+                }
+            }
+            return new TileMap(tileSize, spriteSheets, tiles);
         }
     }
 }

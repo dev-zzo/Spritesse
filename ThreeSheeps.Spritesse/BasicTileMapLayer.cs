@@ -50,8 +50,8 @@ namespace ThreeSheeps.Spritesse
                 for (int colIndex = this.startPosition.X; colIndex < endCol; ++colIndex)
                 {
                     Tile tile = this.tileMap.GetTile(colIndex, rowIndex);
-                    // TODO: check for a "transparent" tile
-                    if (tile.SheetIndex == 0xFFFF)
+                    // Skip empty tiles
+                    if (tile.SheetIndex == Tile.EMPTY_TILE)
                         continue;
                     sheet = this.tileMap.SpriteSheets[tile.SheetIndex];
                     SpriteDefinition definition = sheet.Definitions[tile.SpriteIndex];
