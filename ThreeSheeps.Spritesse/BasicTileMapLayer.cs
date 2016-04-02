@@ -14,6 +14,7 @@ namespace ThreeSheeps.Spritesse
             : base(manager, name, depth)
         {
             this.tileMap = tileMap;
+            this.Scale = 1.0f;
         }
 
         /// <summary>
@@ -24,14 +25,22 @@ namespace ThreeSheeps.Spritesse
             get { return this.tileMap; }
         }
 
+        public float Scale { get; set; }
+
+        protected Point TileSize
+        {
+            get { return new Point((int)(this.TileMap.TileSize.X * this.Scale), (int)(this.TileMap.TileSize.Y * this.Scale)); }
+        }
+
         public override void Update(GameTime gameTime)
         {
             // Check if cached data is invalid
-            if (this.cachedCameraOffset == this.SpriteManager.CameraOffset)
+            if (this.cacheValid && this.cachedCameraOffset == this.SpriteManager.CameraOffset)
             {
                 return;
             }
             // Update cached parameters
+            this.cacheValid = true;
             this.cachedCameraOffset = this.SpriteManager.CameraOffset;
             // Do the calculations
             this.UpdateVisibility();
@@ -43,28 +52,30 @@ namespace ThreeSheeps.Spritesse
             int endCol = this.startPosition.X + this.tileCount.X;
             int endRow = this.startPosition.Y + this.tileCount.Y;
             SpriteSheet sheet = null;
-            Point tileSize = this.TileMap.TileSize;
+            Point tileSize = this.TileSize;
             Vector2 position = this.offset;
             for (int rowIndex = this.startPosition.Y; rowIndex < endRow; ++rowIndex)
             {
+                position.X = this.offset.X;
                 for (int colIndex = this.startPosition.X; colIndex < endCol; ++colIndex)
                 {
                     Tile tile = this.tileMap.GetTile(colIndex, rowIndex);
                     // Skip empty tiles
-                    if (tile.SheetIndex == Tile.EMPTY_TILE)
-                        continue;
-                    sheet = this.tileMap.SpriteSheets[tile.SheetIndex];
-                    SpriteDefinition definition = sheet.Definitions[tile.SpriteIndex];
-                    batch.Draw(
-                        sheet.Texture,
-                        position,
-                        definition.SourceRectangle,
-                        Color.White,
-                        0.0f,
-                        Vector2.Zero,
-                        1.0f,
-                        SpriteEffects.None,
-                        this.Depth);
+                    if (tile.SheetIndex != Tile.EMPTY_TILE)
+                    {
+                        sheet = this.tileMap.SpriteSheets[tile.SheetIndex];
+                        SpriteDefinition definition = sheet.Definitions[tile.SpriteIndex];
+                        batch.Draw(
+                            sheet.Texture,
+                            position,
+                            definition.SourceRectangle,
+                            Color.White,
+                            0.0f,
+                            Vector2.Zero,
+                            this.Scale,
+                            SpriteEffects.None,
+                            this.Depth);
+                    }
                     position.X += tileSize.X;
                 }
                 position.Y += tileSize.Y;
@@ -80,7 +91,7 @@ namespace ThreeSheeps.Spritesse
 
             int cachedCameraX = (int)this.cachedCameraOffset.X;
             int cachedCameraY = (int)this.cachedCameraOffset.Y;
-            Point tileSize = this.TileMap.TileSize;
+            Point tileSize = this.TileSize;
             // Calculate the starting indices
             // NOTE: Clip the camera offset to positive values only
             if (cachedCameraX >= 0)
@@ -108,15 +119,12 @@ namespace ThreeSheeps.Spritesse
             // TODO: implement zooming here.
             Rectangle windowBounds = this.SpriteManager.Game.Window.ClientBounds;
             Point tileMapDims = this.TileMap.Dimensions;
-            this.tileCount.X = Math.Min(
-                1 + (windowBounds.Width / this.TileMap.TileSize.X),
-                tileMapDims.X - this.startPosition.X);
-            this.tileCount.Y = Math.Min(
-                1 + (windowBounds.Height / this.TileMap.TileSize.Y),
-                tileMapDims.Y - this.startPosition.Y);
+            this.tileCount.X = Math.Min(1 + (windowBounds.Width / tileSize.X), tileMapDims.X - this.startPosition.X);
+            this.tileCount.Y = Math.Min(1 + (windowBounds.Height / tileSize.Y), tileMapDims.Y - this.startPosition.Y);
         }
 
         private TileMap tileMap;
+        private bool cacheValid = false;
         private Vector2 cachedCameraOffset;
         private Point startPosition;
         private Point tileCount;
