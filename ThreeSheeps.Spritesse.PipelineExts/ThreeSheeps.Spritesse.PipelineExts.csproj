@@ -59,11 +59,16 @@
     <Compile Include="TileMapImporter.cs" />
     <Compile Include="TileMapProcessor.cs" />
     <Compile Include="TileMapWriter.cs" />
+    <Compile Include="TsxSpriteSheetProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ThreeSheeps.Spritesse\ThreeSheeps.Spritesse.csproj">
       <Project>{8DF69237-369D-41F2-82B6-A83CB5617267}</Project>
       <Name>ThreeSheeps.Spritesse</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ThreeSheeps.Tiled.PipelineExts\ThreeSheeps.Tiled.PipelineExts.csproj">
+      <Project>{EF07E945-21D5-4F4F-B747-A179DD8A7209}</Project>
+      <Name>ThreeSheeps.Tiled.PipelineExts</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
