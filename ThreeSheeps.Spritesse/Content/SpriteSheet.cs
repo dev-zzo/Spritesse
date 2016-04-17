@@ -70,10 +70,6 @@ namespace ThreeSheeps.Spritesse.Content
         /// <returns>New sprite sheet instance</returns>
         protected override SpriteSheet Read(ContentReader input, SpriteSheet existingInstance)
         {
-            // Handle the texture
-            string textureName = input.ReadString();
-            Texture2D texture = input.ContentManager.Load<Texture2D>(textureName);
-
             // Handle definitions
             uint definitionCount = input.ReadUInt32();
             SpriteDefinition[] definitions = new SpriteDefinition[definitionCount];
@@ -81,6 +77,7 @@ namespace ThreeSheeps.Spritesse.Content
             {
                 definitions[index] = this.ReadDefinition(input);
             }
+            Texture2D texture = input.ReadObject<Texture2D>();
 
             // Done
             return new SpriteSheet(texture, definitions);

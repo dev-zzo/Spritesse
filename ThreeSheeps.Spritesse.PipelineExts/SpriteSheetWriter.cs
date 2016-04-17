@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.Xna.Framework.Content.Pipeline;
+﻿using Microsoft.Xna.Framework.Content.Pipeline;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using ThreeSheeps.Spritesse.Content;
 
@@ -10,7 +10,6 @@ namespace ThreeSheeps.Spritesse.PipelineExts
     {
         protected override void Write(ContentWriter output, SpriteSheetContent value)
         {
-            output.Write(value.TextureName);
             output.Write(value.Definitions.Length);
             foreach (SpriteDefinition def in value.Definitions)
             {
@@ -22,6 +21,7 @@ namespace ThreeSheeps.Spritesse.PipelineExts
                 output.Write((short)def.PivotOffset.X);
                 output.Write((short)def.PivotOffset.Y);
             }
+            output.WriteObject<TextureContent>(value.TextureObject);
         }
 
         public override string GetRuntimeReader(TargetPlatform targetPlatform)

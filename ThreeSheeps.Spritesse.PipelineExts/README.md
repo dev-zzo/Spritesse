@@ -7,6 +7,8 @@ This project contains various content pipeline extensions to handle custom conte
 This is metadata for a texture atlas containing multiple sprites; each definition provides the location and size of a sprite.
 The pivot offset is the location of the (0, 0) point within the sprite.
 
+Texture data will be incorporated into the resulting .xnb file.
+
 The engine type is `ThreeSheeps.Spritesse.Content.SpriteSheet`.
 
 Content files should have the `.spritesheet` extension.
@@ -17,7 +19,10 @@ Content files should have the `.spritesheet` extension.
 <?xml version="1.0" encoding="utf-8" ?>
 <XnaContent>
   <Asset Type="ThreeSheeps.Spritesse.PipelineExts.SpriteSheetContent">
-    <TextureName>Sprites/cat.spritesheet</TextureName>
+    <Texture>
+      <!-- The ID is arbitrary but must be the same as below -->
+      <Reference>#Texture</Reference>
+    </Texture>
     <Definitions>
       <Item>
         <SourceRectangle>0 0 32 32</SourceRectangle>
@@ -32,6 +37,10 @@ Content files should have the `.spritesheet` extension.
         <PivotOffset>15 31</PivotOffset>
       </Item>
     </Definitions>
+  <ExternalReferences>
+    <!-- This references the external texture content that will be used to build the sprite sheet -->
+    <ExternalReference ID="#Texture" TargetType="Microsoft.Xna.Framework.Content.Pipeline.Graphics.TextureContent">cat.spritesheet.png</ExternalReference>
+  </ExternalReferences>
   </Asset>
 </XnaContent>
 ```
