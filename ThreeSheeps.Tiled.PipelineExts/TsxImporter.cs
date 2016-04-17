@@ -64,6 +64,7 @@ namespace ThreeSheeps.Tiled
                     terrain.Name = root.Attributes["name"].Value;
                     terrain.TileId = root.ParseIntAttribute("tile");
                     terrain.Properties = TxxProperties.FromParentXml(node);
+                    terrains.Add(terrain);
                 }
             }
             content.Terrains = terrains.ToArray();
