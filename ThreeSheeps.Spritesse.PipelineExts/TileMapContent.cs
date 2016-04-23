@@ -10,8 +10,8 @@ namespace ThreeSheeps.Spritesse.PipelineExts
 {
     public sealed class TileContent
     {
-        public ushort SheetIndex;
-        public ushort SpriteIndex;
+        public int SheetIndex;
+        public int SpriteIndex;
     }
 
     public sealed class TileRowContent
@@ -22,8 +22,6 @@ namespace ThreeSheeps.Spritesse.PipelineExts
     public sealed class TileMapContent
     {
         public Point TileSize;
-
-        public string[] SpriteSheets;
 
         [ContentSerializer(CollectionItemName = "Row")]
         public TileRowContent[] TileRows;

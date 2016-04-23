@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using ThreeSheeps.Spritesse.Content;
@@ -6,18 +6,23 @@ using ThreeSheeps.Spritesse.Content;
 namespace ThreeSheeps.Spritesse.PipelineExts
 {
     [ContentTypeWriter]
-    public class TileMapWriter : ContentTypeWriter<TileMapContent>
+    public class LocationWriter : ContentTypeWriter<LocationContent>
     {
-        protected override void Write(ContentWriter output, TileMapContent value)
+        protected override void Write(ContentWriter output, LocationContent value)
+        {
+            output.WriteObject<List<ExternalReference<SpriteSheetContent>>>(value.SpriteSheetRefs);
+            output.Write((byte)0);
+            output.Write((byte)value.Layers.Count);
+            foreach (TileMapContent layer in value.Layers)
+            {
+                this.Write(output, layer);
+            }
+        }
+
+        private void Write(ContentWriter output, TileMapContent value)
         {
             output.Write(value.TileSize.X);
             output.Write(value.TileSize.Y);
-            output.Write((byte)value.SpriteSheets.Length);
-            
-            foreach (var sheet in value.SpriteSheets)
-            {
-                output.Write(sheet);
-            }
             output.Write(value.TileRows.Length);
             output.Write(value.TileRows[0].Tiles.Length);
             foreach (TileRowContent row in value.TileRows)
@@ -39,7 +44,12 @@ namespace ThreeSheeps.Spritesse.PipelineExts
 
         public override string GetRuntimeReader(TargetPlatform targetPlatform)
         {
-            return typeof(TileMapReader).AssemblyQualifiedName;
+            return typeof(LocationReader).AssemblyQualifiedName;
+        }
+
+        public override string GetRuntimeType(TargetPlatform targetPlatform)
+        {
+            return typeof(Location).AssemblyQualifiedName;
         }
     }
 }

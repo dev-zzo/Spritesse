@@ -71,6 +71,7 @@
     <Compile Include="Content\AnimationSet.cs" />
     <Compile Include="BasicSpriteLayer.cs" />
     <Compile Include="BasicTileMapLayer.cs" />
+    <Compile Include="Content\Location.cs" />
     <Compile Include="Content\TileMap.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
