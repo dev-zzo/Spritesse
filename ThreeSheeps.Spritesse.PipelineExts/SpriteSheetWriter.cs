@@ -28,5 +28,10 @@ namespace ThreeSheeps.Spritesse.PipelineExts
         {
             return typeof(SpriteSheetReader).AssemblyQualifiedName;
         }
+
+        public override string GetRuntimeType(TargetPlatform targetPlatform)
+        {
+            return typeof(SpriteSheet).AssemblyQualifiedName;
+        }
     }
 }
