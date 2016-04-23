@@ -8,11 +8,11 @@ namespace ThreeSheeps.Tiled
     public struct TmxTileContent
     {
         /// <summary>
-        /// Local tile ID; 0 means no tile present.
+        /// Local tile ID; -1 means no tile present.
         /// </summary>
         public int TileId;
         /// <summary>
-        /// Tile set to be used
+        /// Tile set to be used; -1 means no tile present.
         /// </summary>
         public int TileSetId;
         /// <summary>

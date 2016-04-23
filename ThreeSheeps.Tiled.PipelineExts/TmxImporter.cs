@@ -146,9 +146,13 @@ namespace ThreeSheeps.Tiled
                         }
                         // NOTE: it is impossible to validate tile id here without completely loading tilesets.
                         tid -= tileSetToUse.FirstGid;
-                        // NOTE: these are set to null/0 by default.
                         tileData.TileSetId = tileSetIndex - 1;
                         tileData.TileId = tid;
+                    }
+                    else
+                    {
+                        tileData.TileSetId = -1;
+                        tileData.TileId = -1;
                     }
                     layer.Tiles[x, y] = tileData;
                 }
