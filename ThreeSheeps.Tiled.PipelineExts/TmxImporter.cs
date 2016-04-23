@@ -45,19 +45,20 @@ namespace ThreeSheeps.Tiled
                 throw new InvalidContentException("no tilesets referenced");
             }
 
-            foreach (XmlNode node in root.SelectNodes("layer"))
+            foreach (XmlNode node in root.SelectNodes("layer|objectgroup|imagelayer"))
             {
-                TmxTileLayerContent data = ImportLayerContent(node);
-                map.TileLayers.Add(data);
-            }
-
-            foreach (XmlNode node in root.SelectNodes("objectgroup"))
-            {
-                map.ObjectLayers.Add(TxxObjectGroupImportHelper.Import(node));
-            }
-
-            foreach (XmlNode node in root.SelectNodes("imagelayer"))
-            {
+                if (node.Name == "layer")
+                {
+                    map.Layers.Add(ImportLayerContent(node));
+                }
+                else if (node.Name == "objectgroup")
+                {
+                    map.Layers.Add(TxxObjectGroupImportHelper.Import(node));
+                }
+                else
+                {
+                    // TODO: implement imagelayer handling.
+                }
             }
 
             return map;
@@ -78,10 +79,10 @@ namespace ThreeSheeps.Tiled
                 string path = sourceAttribute.Value;
                 if (!Path.IsPathRooted(path))
                 {
-                    path = Path.Combine(Path.GetDirectoryName(this.sourcePath), path);
+                    path = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(this.sourcePath), path));
                 }
                 context.AddDependency(path);
-                externalReference.Source = path;
+                externalReference.Source = new ExternalReference<TsxTileSetContent>(path);
             }
             else
             {
@@ -162,7 +163,6 @@ namespace ThreeSheeps.Tiled
 
         private static void ImportGids(int gidCount, uint[] gids, XmlNode dataNode)
         {
-            string content = dataNode.Value;
             string encoding = dataNode.GetStringAttribute("encoding");
             if (encoding == null)
             {
@@ -184,7 +184,7 @@ namespace ThreeSheeps.Tiled
             }
             else if (encoding == "base64")
             {
-                byte[] data = Convert.FromBase64String(content);
+                byte[] data = Convert.FromBase64String(dataNode.InnerText);
                 int byteCount = sizeof(UInt32) * gidCount;
                 string compression = dataNode.GetStringAttribute("compression");
                 if (compression == null)
@@ -234,7 +234,7 @@ namespace ThreeSheeps.Tiled
             else if (encoding == "csv")
             {
                 // plain CSV
-                string[] parts = content.Split(",\n\r".ToCharArray());
+                string[] parts = dataNode.InnerText.Split(",\n\r".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length != gidCount)
                 {
                     throw new InvalidContentException(String.Format("unexpected gid count in CSV (expected {0}, got {1})", gidCount, parts.Length));

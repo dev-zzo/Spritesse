@@ -1,4 +1,5 @@
-﻿
+﻿using Microsoft.Xna.Framework.Content.Pipeline;
+
 namespace ThreeSheeps.Tiled
 {
     /// <summary>
@@ -17,7 +18,7 @@ namespace ThreeSheeps.Tiled
         /// <summary>
         /// If referring to an external tile set, the path to the source .tsx.
         /// </summary>
-        public string Source;
+        public ExternalReference<TsxTileSetContent> Source;
     }
 
     public class TmxEmbeddedTileSet : TmxTileSetReference
