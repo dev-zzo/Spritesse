@@ -69,6 +69,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TxxLayerContent.cs" />
     <Compile Include="TmxMapContent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TmxImporter.cs" />

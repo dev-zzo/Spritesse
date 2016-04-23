@@ -32,24 +32,8 @@ namespace ThreeSheeps.Tiled
     /// <summary>
     /// Describes a tile layer.
     /// </summary>
-    public sealed class TmxTileLayerContent
+    public sealed class TmxTileLayerContent : TxxLayerContent
     {
-        /// <summary>
-        /// Object name.
-        /// </summary>
-        public string Name;
-        /// <summary>
-        /// Whether this layer is visible
-        /// </summary>
-        public bool Visible;
-        /// <summary>
-        /// Opacity of this layer
-        /// </summary>
-        public float Opacity;
-        /// <summary>
-        /// Rendering offset for this layer, in pixels.
-        /// </summary>
-        public Point RenderingOffset;
         /// <summary>
         /// The dimensions of the layer, in tiles.
         /// Traditionally required, but as of Tiled Qt always the same as the map width.
@@ -59,9 +43,5 @@ namespace ThreeSheeps.Tiled
         /// The 2D array containing the tile information. Coords = (x, y).
         /// </summary>
         public TmxTileContent[,] Tiles;
-        /// <summary>
-        /// Contains any custom properties set for this node.
-        /// </summary>
-        public TxxProperties Properties;
     }
 }

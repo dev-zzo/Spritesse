@@ -89,35 +89,15 @@ namespace ThreeSheeps.Tiled
     /// <summary>
     /// Contains TmxObjectContent instances.
     /// </summary>
-    public sealed class TxxObjectGroupContent
+    public sealed class TxxObjectGroupContent : TxxLayerContent
     {
-        /// <summary>
-        /// Object group name.
-        /// </summary>
-        public string Name;
-        /// <summary>
-        /// Rendering offset for this object group, in pixels.
-        /// </summary>
-        public Point RenderingOffset;
-        /// <summary>
-        // Whether the objects in this group are visible.
-        /// </summary>
-        public bool Visible;
         /// <summary>
         /// The color used to display the objects in this group.
         /// </summary>
         public Color Color;
         /// <summary>
-        /// How transparent is this object group.
-        /// </summary>
-        public float Opacity;
-        /// <summary>
         /// Objects collection.
         /// </summary>
         public readonly List<TxxObjectContent> Objects = new List<TxxObjectContent>();
-        /// <summary>
-        /// Contains any custom properties set for this node.
-        /// </summary>
-        public TxxProperties Properties;
     }
 }
