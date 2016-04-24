@@ -129,26 +129,21 @@ namespace ThreeSheeps.Tiled
                     tileData.FlippedDiagonally = (gid & FLIPPED_DIAGONALLY) != 0;
                     tileData.FlippedVertically = (gid & FLIPPED_VERTICALLY) != 0;
                     tileData.FlippedHorizontally = (gid & FLIPPED_HORIZONTALLY) != 0;
-                    TmxTileSetReference tileSetToUse = null;
                     int tid = (int)(gid & 0x0FFFFFFF);
                     if (tid > 0)
                     {
+                        TmxTileSetReference tileSetToUse = null;
                         tileSetToUse = this.map.TileSets[0];
-                        int tileSetIndex = 1;
-                        while (tileSetIndex < this.map.TileSets.Count)
+                        for (int tileSetIndex = this.map.TileSets.Count - 1; tileSetIndex >= 0; --tileSetIndex)
                         {
                             TmxTileSetReference tileSet = this.map.TileSets[tileSetIndex];
-                            if (tid > tileSet.FirstGid)
+                            if (tid >= tileSet.FirstGid)
                             {
+                                tileData.TileSetId = tileSetIndex;
+                                tileData.TileId = tid - tileSet.FirstGid;
                                 break;
                             }
-                            tileSetToUse = tileSet;
-                            ++tileSetIndex;
                         }
-                        // NOTE: it is impossible to validate tile id here without completely loading tilesets.
-                        tid -= tileSetToUse.FirstGid;
-                        tileData.TileSetId = tileSetIndex - 1;
-                        tileData.TileId = tid;
                     }
                     else
                     {
