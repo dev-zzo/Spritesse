@@ -21,8 +21,8 @@ namespace ThreeSheeps.Spritesse.PipelineExts
             List<SpriteDefinition> defs = new List<SpriteDefinition>();
             int strideX = input.TileSize.X + input.Spacing;
             int strideY = input.TileSize.Y + input.Spacing;
-            int width = input.Image.ImageSize.X - strideX;
-            int height = input.Image.ImageSize.Y - strideY;
+            int width = input.Image.ImageSize.X;
+            int height = input.Image.ImageSize.Y;
             for (int y = input.Margin; y < height; y += strideY)
             {
                 for (int x = input.Margin; x < width; x += strideX)
