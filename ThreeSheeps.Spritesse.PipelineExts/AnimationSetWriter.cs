@@ -9,7 +9,6 @@ namespace ThreeSheeps.Spritesse.PipelineExts
     {
         protected override void Write(ContentWriter output, AnimationSetContent value)
         {
-            output.Write(value.SpriteSheet);
             output.Write(value.Animations.Length);
             foreach (AnimationSequence seq in value.Animations)
             {

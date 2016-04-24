@@ -103,7 +103,6 @@ namespace ThreeSheeps.Spritesse.Scene
         public void SetAnimation(AnimationSet set, string name)
         {
             this.animationSet = set;
-            this.spriteSheet = set.SpriteSheet;
             this.SetAnimation(name);
         }
 

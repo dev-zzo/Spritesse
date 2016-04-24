@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework.Content;
 
 namespace ThreeSheeps.Spritesse.Content
@@ -50,19 +51,8 @@ namespace ThreeSheeps.Spritesse.Content
     /// <summary>
     /// Defines an animation set (1+ animations) over a sprite sheet.
     /// </summary>
-    public sealed class AnimationSet
+    public sealed class AnimationSet : List<AnimationSequence>
     {
-        internal AnimationSet(SpriteSheet spriteSheet, AnimationSequence[] animations)
-        {
-            this.SpriteSheet = spriteSheet;
-            this.animations = animations;
-        }
-
-        /// <summary>
-        /// Associated sprite sheet for these animations
-        /// </summary>
-        public SpriteSheet SpriteSheet { get; private set; }
-
         /// <summary>
         /// Retrieve a specific animation sequence
         /// </summary>
@@ -72,7 +62,7 @@ namespace ThreeSheeps.Spritesse.Content
         {
             get
             {
-                foreach (AnimationSequence a in this.animations)
+                foreach (AnimationSequence a in this)
                 {
                     if (a.Name == name)
                     {
@@ -82,8 +72,6 @@ namespace ThreeSheeps.Spritesse.Content
                 throw new IndexOutOfRangeException("name");
             }
         }
-
-        private AnimationSequence[] animations;
     }
 
     /// <summary>
@@ -96,7 +84,7 @@ namespace ThreeSheeps.Spritesse.Content
             string spriteSheetName = input.ReadString();
             SpriteSheet spriteSheet = input.ContentManager.Load<SpriteSheet>(spriteSheetName);
             int animationCount = input.ReadInt32();
-            AnimationSequence[] animations = new AnimationSequence[animationCount];
+            AnimationSet animations = new AnimationSet();
             for (int animIndex = 0; animIndex < animationCount; ++animIndex)
             {
                 string name = input.ReadString();
@@ -108,9 +96,9 @@ namespace ThreeSheeps.Spritesse.Content
                     frames[frameIndex].SpriteIndex = input.ReadUInt16();
                     frames[frameIndex].Delay = input.ReadUInt16();
                 }
-                animations[animIndex] = new AnimationSequence(name, looped, frames);
+                animations.Add(new AnimationSequence(name, looped, frames));
             }
-            return new AnimationSet(spriteSheet, animations);
+            return animations;
         }
     }
 }
