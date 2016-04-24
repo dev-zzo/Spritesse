@@ -9,20 +9,21 @@ namespace ThreeSheeps.Spritesse.Content
     /// </summary>
     public class Location
     {
-        public Location(List<SpriteSheet> spriteSheets, List<TileMap> tileMaps)
+        public Location(List<SpriteSheet> spriteSheets, List<TileMap> bgTileMaps, List<TileMap> fgTileMaps)
         {
             this.spriteSheets = spriteSheets;
-            this.tileMaps = tileMaps;
+            this.bgTileMaps = bgTileMaps;
+            this.fgTileMaps = fgTileMaps;
         }
 
         public IList<SpriteSheet> SpriteSheets { get { return this.spriteSheets; } }
 
-        public int BackgroundLayersCount { get; private set; }
-
-        public IList<TileMap> Layers { get { return this.tileMaps; } }
+        public IList<TileMap> BackgroundLayers { get { return this.bgTileMaps; } }
+        public IList<TileMap> ForegroundLayers { get { return this.fgTileMaps; } }
 
         private List<SpriteSheet> spriteSheets;
-        private List<TileMap> tileMaps;
+        private List<TileMap> bgTileMaps;
+        private List<TileMap> fgTileMaps;
     }
 
     public sealed class LocationReader : ContentTypeReader<Location>
@@ -30,15 +31,17 @@ namespace ThreeSheeps.Spritesse.Content
         protected override Location Read(ContentReader input, Location existingInstance)
         {
             List<SpriteSheet> spriteSheets = input.ReadObject<List<SpriteSheet>>();
-            byte backgroundLayersCount = input.ReadByte();
-            byte layerCount = input.ReadByte();
-            List<TileMap> layers = new List<TileMap>();
-            while (layerCount-- > 0)
+            List<TileMap> bgLayers = new List<TileMap>();
+            for (int layerCount = input.ReadByte(); layerCount > 0; layerCount--)
             {
-                layers.Add(this.ReadLayer(input, spriteSheets));
+                bgLayers.Add(this.ReadLayer(input, spriteSheets));
             }
-
-            return new Location(spriteSheets, layers);
+            List<TileMap> fgLayers = new List<TileMap>();
+            for (int layerCount = input.ReadByte(); layerCount > 0; layerCount--)
+            {
+                fgLayers.Add(this.ReadLayer(input, spriteSheets));
+            }
+            return new Location(spriteSheets, bgLayers, fgLayers);
         }
 
         private TileMap ReadLayer(ContentReader input, List<SpriteSheet> spriteSheets)

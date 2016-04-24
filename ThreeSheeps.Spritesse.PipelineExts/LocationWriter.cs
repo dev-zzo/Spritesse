@@ -11,9 +11,14 @@ namespace ThreeSheeps.Spritesse.PipelineExts
         protected override void Write(ContentWriter output, LocationContent value)
         {
             output.WriteObject<List<ExternalReference<SpriteSheetContent>>>(value.SpriteSheetRefs);
-            output.Write((byte)0);
-            output.Write((byte)value.Layers.Count);
-            foreach (TileMapContent layer in value.Layers)
+            Write(output, value.BackgroundLayers);
+            Write(output, value.ForegroundLayers);
+        }
+
+        private void Write(ContentWriter output, List<TileMapContent> value)
+        {
+            output.Write((byte)value.Count);
+            foreach (TileMapContent layer in value)
             {
                 this.Write(output, layer);
             }

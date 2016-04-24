@@ -7,8 +7,7 @@ namespace ThreeSheeps.Spritesse.PipelineExts
     {
         public List<ExternalReference<SpriteSheetContent>> SpriteSheetRefs;
 
-        public int BackgroundLayerCount;
-
-        public List<TileMapContent> Layers;
+        public List<TileMapContent> BackgroundLayers;
+        public List<TileMapContent> ForegroundLayers;
     }
 }

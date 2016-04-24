@@ -14,17 +14,26 @@ namespace ThreeSheeps.Spritesse.PipelineExts
             List<ExternalReference<SpriteSheetContent>> spriteSheets = BuildSpriteSheetRefs(input, context);
             content.SpriteSheetRefs = spriteSheets;
 
-            List<TileMapContent> layers = new List<TileMapContent>();
+            List<TileMapContent> bgLayers = new List<TileMapContent>();
+            List<TileMapContent> fgLayers = new List<TileMapContent>();
+            List<TileMapContent> layers = bgLayers;
             foreach (TxxLayerContent layer in input.Layers)
             {
-                TmxTileLayerContent tileLayer = layer as TmxTileLayerContent;
-                if (tileLayer != null)
+                if (layer is TmxTileLayerContent)
                 {
+                    TmxTileLayerContent tileLayer = layer as TmxTileLayerContent;
                     TileMapContent layerContent = BuildTileMap(input, tileLayer);
                     layers.Add(layerContent);
                 }
+                else if (layer is TxxObjectGroupContent)
+                {
+                    // Switch to foreground layers now
+                    layers = fgLayers;
+                    // TODO: handle objects.
+                }
             }
-            content.Layers = layers;
+            content.BackgroundLayers = bgLayers;
+            content.ForegroundLayers = fgLayers;
 
             return content;
         }
