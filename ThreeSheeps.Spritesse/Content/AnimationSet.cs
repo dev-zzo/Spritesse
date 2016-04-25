@@ -82,7 +82,6 @@ namespace ThreeSheeps.Spritesse.Content
         protected override AnimationSet Read(ContentReader input, AnimationSet existingInstance)
         {
             string spriteSheetName = input.ReadString();
-            SpriteSheet spriteSheet = input.ContentManager.Load<SpriteSheet>(spriteSheetName);
             int animationCount = input.ReadInt32();
             AnimationSet animations = new AnimationSet();
             for (int animIndex = 0; animIndex < animationCount; ++animIndex)
