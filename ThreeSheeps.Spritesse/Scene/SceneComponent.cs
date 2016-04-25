@@ -94,18 +94,23 @@ namespace ThreeSheeps.Spritesse.Scene
         public override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
+
+            Rectangle cameraBox = this.sceneState.CameraRectangle;
             this.spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
             foreach (IDrawableSceneObject obj in this.drawables)
             {
-                if (!obj.IsVisible(this.sceneState.CameraRectangle))
+                if (!obj.Visible)
+                    continue;
+                Rectangle boundingBox = obj.BoundingBox;
+                if (!(cameraBox.Intersects(boundingBox) || cameraBox.Contains(boundingBox)))
                     continue;
 
                 float depth = obj.Depth;
                 if (depth < 0.0f)
                 {
-                    float depthRange = START_DEPTH_DYNAMIC - END_DEPTH_DYNAMIC;
-                    float posDiff = obj.Position.Y - this.sceneState.CameraRectangle.Y;
-                    depth = END_DEPTH_DYNAMIC - depthRange * posDiff / this.sceneState.CameraRectangle.Height;
+                    float depthRange = END_DEPTH_DYNAMIC - START_DEPTH_DYNAMIC;
+                    float posDiff = boundingBox.Bottom - cameraBox.Y;
+                    depth = END_DEPTH_DYNAMIC - depthRange * posDiff / cameraBox.Height;
                 }
 
                 obj.Draw(this.spriteBatch, this.sceneState, depth);
