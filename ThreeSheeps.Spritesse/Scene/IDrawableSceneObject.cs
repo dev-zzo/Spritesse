@@ -9,7 +9,7 @@ namespace ThreeSheeps.Spritesse.Scene
 
         bool Visible { get; set; }
 
-        bool IsVisible(Rectangle cameraRect);
+        Rectangle BoundingBox { get; }
 
         void Draw(SpriteBatch spriteBatch, SceneState sceneState, float depth);
     }

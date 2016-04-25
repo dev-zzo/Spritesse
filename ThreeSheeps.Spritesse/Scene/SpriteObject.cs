@@ -60,15 +60,17 @@ namespace ThreeSheeps.Spritesse.Scene
 
         public bool Visible { get; set; }
 
-        public bool IsVisible(Rectangle cameraRect)
+        public Rectangle BoundingBox
         {
-            SpriteDefinition definition = spriteSheet.Definitions[this.SpriteIndex];
-            Rectangle boundingBox = new Rectangle(
-                this.Position.X - definition.PivotOffset.X,
-                this.Position.Y - definition.PivotOffset.Y,
-                definition.SourceRectangle.Width,
-                definition.SourceRectangle.Height);
-            return this.Visible && (cameraRect.Contains(boundingBox) || cameraRect.Intersects(boundingBox));
+            get
+            {
+                SpriteDefinition definition = spriteSheet.Definitions[this.SpriteIndex];
+                return new Rectangle(
+                    this.Position.X - definition.PivotOffset.X,
+                    this.Position.Y - definition.PivotOffset.Y,
+                    definition.SourceRectangle.Width,
+                    definition.SourceRectangle.Height);
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, SceneState sceneState, float depth)

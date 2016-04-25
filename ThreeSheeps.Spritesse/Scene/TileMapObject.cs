@@ -65,16 +65,18 @@ namespace ThreeSheeps.Spritesse.Scene
 
         public bool Visible { get; set; }
 
-        public bool IsVisible(Rectangle cameraRect)
+        public Rectangle BoundingBox
         {
-            Point tileSize = this.asset.TileSize;
-            Point tileMapDims = this.asset.Dimensions;
-            Rectangle boundingBox = new Rectangle(
-                this.Position.X, this.Position.Y,
-                tileMapDims.X * tileSize.X, tileMapDims.Y * tileSize.Y);
-            return this.Visible && (cameraRect.Contains(boundingBox) || cameraRect.Intersects(boundingBox));
+            get
+            {
+                Point tileSize = this.asset.TileSize;
+                Point tileMapDims = this.asset.Dimensions;
+                return new Rectangle(
+                    this.Position.X, this.Position.Y,
+                    tileMapDims.X * tileSize.X, tileMapDims.Y * tileSize.Y);
+            }
         }
-        
+
         public void Draw(SpriteBatch spriteBatch, SceneState sceneState, float depth)
         {
             // Draw visible tiles
