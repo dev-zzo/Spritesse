@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ThreeSheeps.Spritesse.Behaviour;
 using ThreeSheeps.Spritesse.Content;
 
 namespace ThreeSheeps.Spritesse.Scene

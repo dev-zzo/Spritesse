@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace ThreeSheeps.Spritesse.Scene
+namespace ThreeSheeps.Spritesse.Behaviour
 {
     public interface IBehaviour
     {

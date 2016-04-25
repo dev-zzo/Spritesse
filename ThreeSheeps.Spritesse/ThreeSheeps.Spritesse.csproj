@@ -70,7 +70,7 @@
     <Compile Include="Content\AnimationSet.cs" />
     <Compile Include="Content\Location.cs" />
     <Compile Include="Content\TileMap.cs" />
-    <Compile Include="Scene\IBehaviour.cs" />
+    <Compile Include="Behaviour\IBehaviour.cs" />
     <Compile Include="Scene\IDrawableSceneObject.cs" />
     <Compile Include="Scene\ISceneCameraService.cs" />
     <Compile Include="Scene\ISceneObject.cs" />
