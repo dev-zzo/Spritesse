@@ -76,24 +76,29 @@ namespace ThreeSheeps.Spritesse.Graphics
 
         private Rectangle CalculateVisibleTiles(Rectangle cameraRect)
         {
-            Point tileSize = this.tileMap.TileSize;
-            Point tileMapDims = this.tileMap.Dimensions;
-            // To draw the visible area, the following is required:
-            // + Starting indices of the top left visible tile
-            // + Tile counts in both dimensions
-            int cameraX = cameraRect.X - this.Position.X;
-            int cameraY = cameraRect.Y - this.Position.Y;
-            // Calculate the starting indices
-            // NOTE: Clip the camera offset to positive values only
-            int startTileX, startTileY;
-            startTileX = cameraX > 0 ? cameraX / tileSize.X : 0;
-            startTileY = cameraY > 0 ? cameraY / tileSize.Y : 0;
-            // Calculate tile counts
-            // NOTE: Clip tile counts to keep them within bounds
-            int tileCountX, tileCountY;
-            tileCountX = Math.Min(1 + (cameraRect.Width / tileSize.X), tileMapDims.X - startTileX);
-            tileCountY = Math.Min(1 + (cameraRect.Height / tileSize.Y), tileMapDims.Y - startTileY);
-            return new Rectangle(startTileX, startTileY, tileCountX, tileCountY);
+            Rectangle bb = this.BoundingBox;
+            if (cameraRect.Intersects(bb))
+            {
+                Rectangle visible = Rectangle.Intersect(cameraRect, bb);
+                visible.Offset(-this.Position.X, -this.Position.Y);
+                // To draw the visible area, the following is required:
+                // + Starting indices of the top left visible tile
+                // + Tile counts in both dimensions
+                Point tileSize = this.tileMap.TileSize;
+                Point tileMapDims = this.tileMap.Dimensions;
+                // Calculate the starting indices
+                // NOTE: Clip the camera offset to positive values only
+                int startTileX, startTileY;
+                startTileX = visible.X > 0 ? visible.X / tileSize.X : 0;
+                startTileY = visible.Y > 0 ? visible.Y / tileSize.Y : 0;
+                // Calculate tile counts
+                // NOTE: Clip tile counts to keep them within bounds
+                int tileCountX, tileCountY;
+                tileCountX = Math.Min(1 + (visible.Width / tileSize.X), tileMapDims.X - startTileX);
+                tileCountY = Math.Min(1 + (visible.Height / tileSize.Y), tileMapDims.Y - startTileY);
+                return new Rectangle(startTileX, startTileY, tileCountX, tileCountY);
+            }
+            return new Rectangle();
         }
 
         private TileMap tileMap;
