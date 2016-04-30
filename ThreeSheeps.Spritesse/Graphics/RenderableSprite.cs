@@ -1,42 +1,35 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ThreeSheeps.Spritesse.Behaviour;
 using ThreeSheeps.Spritesse.Content;
 
-namespace ThreeSheeps.Spritesse.Scene
+namespace ThreeSheeps.Spritesse.Graphics
 {
-    public class SpriteObject : IDrawableSceneObject, ISmartSceneObject
+    public class RenderableSprite : IRenderable
     {
-        public SpriteObject(SpriteSheet spriteSheet, int spriteIndex, AnimationSet animationSet = null)
+        public RenderableSprite(SpriteSheet spriteSheet, int spriteIndex, AnimationSet animationSet = null, string animationName = null)
         {
             this.spriteSheet = spriteSheet;
             this.SpriteIndex = spriteIndex;
-            this.animationSet = animationSet;
             this.Visible = true;
-            this.Depth = -1.0f;
             this.TintColor = Color.White;
             this.Effects = SpriteEffects.None;
-            this.AnimationPlaying = false;
-            this.SpeedFactor = 1.0f;
+            this.AnimationSpeed = 1.0f;
+            this.animationSet = animationSet;
+            if (animationName != null)
+            {
+                this.AnimationPlaying = true;
+                SetAnimation(animationName);
+            }
+            else
+            {
+                this.AnimationPlaying = false;
+            }
         }
 
-        #region ISceneObject implementation
-
+        /// <summary>
+        /// Object position in screen space, in pixels
+        /// </summary>
         public Point Position { get; set; }
-
-        public void Update(GameTime gameTime, SceneState sceneState)
-        {
-            if (this.Behaviour != null)
-            {
-                this.Behaviour.Update(gameTime);
-            }
-            if (this.AnimationPlaying)
-            {
-                this.UpdateAnimation(gameTime);
-            }
-        }
-
-        #endregion
 
         /// <summary>
         /// Color to be used for tinting
@@ -49,14 +42,6 @@ namespace ThreeSheeps.Spritesse.Scene
         public SpriteEffects Effects { get; set; }
 
         public int SpriteIndex { get; set; }
-
-        public bool AnimationPlaying { get; set; }
-
-        public float SpeedFactor { get; set; }
-
-        #region IDrawableSceneObject implementation
-
-        public float Depth { get; set; }
 
         public bool Visible { get; set; }
 
@@ -73,29 +58,17 @@ namespace ThreeSheeps.Spritesse.Scene
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, SceneState sceneState, float depth)
-        {
-            SpriteDefinition definition = spriteSheet.Definitions[this.SpriteIndex];
-            // Calculate a corrected screen position
-            Vector2 position = new Vector2(
-                this.Position.X - definition.PivotOffset.X,
-                this.Position.Y - definition.PivotOffset.Y);
-            // Issue a draw call
-            spriteBatch.Draw(
-                spriteSheet.Texture,
-                position,
-                definition.SourceRectangle,
-                this.TintColor,
-                0.0f,
-                Vector2.Zero,
-                1.0f,
-                this.Effects,
-                depth);
-        }
+        #region Animation related knobs
 
-        #endregion
+        /// <summary>
+        /// Whether an animation is currently playing
+        /// </summary>
+        public bool AnimationPlaying { get; set; }
 
-        public IBehaviour Behaviour { get; set; }
+        /// <summary>
+        /// Speed factor for animation playback
+        /// </summary>
+        public float AnimationSpeed { get; set; }
 
         /// <summary>
         /// Set the specific animation and start playing
@@ -127,10 +100,45 @@ namespace ThreeSheeps.Spritesse.Scene
             this.currentFrame = 0;
         }
 
+        #endregion
+
+        /// <summary>
+        /// Updates the sprite state, if needed.
+        /// </summary>
+        /// <param name="gameTime"></param>
+        public void Update(GameTime gameTime)
+        {
+            if (this.AnimationPlaying)
+            {
+                this.UpdateAnimation(gameTime);
+            }
+        }
+
+        /// <summary>
+        /// Renders the sprite.
+        /// </summary>
+        /// <param name="context">Rendering context object</param>
+        public void Draw(SceneRenderContext context)
+        {
+            SpriteDefinition definition = spriteSheet.Definitions[this.SpriteIndex];
+            // Issue a draw call
+            context.SpriteBatch.Draw(
+                spriteSheet.Texture,
+                this.BoundingBox,
+                definition.SourceRectangle,
+                this.TintColor,
+                0.0f,
+                Vector2.Zero,
+                this.Effects,
+                0.0f);
+        }
+
+        #region Implementation details
+
         private void UpdateAnimation(GameTime gameTime)
         {
             // Add the elapsed game time
-            this.timeElapsed += (float)gameTime.ElapsedGameTime.TotalMilliseconds * this.SpeedFactor;
+            this.timeElapsed += (float)gameTime.ElapsedGameTime.TotalMilliseconds * this.AnimationSpeed;
             // Check the elapsed time against the current frame's delay
             AnimationFrame[] frames = this.currentSequence.Frames;
             int currentFrame = this.currentFrame;
@@ -168,7 +176,7 @@ namespace ThreeSheeps.Spritesse.Scene
             }
             // Update the value
             this.currentFrame = currentFrame;
-            this.SpriteIndex = this.currentSequence.Frames[this.currentFrame].SpriteIndex;
+            this.SpriteIndex = this.currentSequence.Frames[currentFrame].SpriteIndex;
         }
 
         private SpriteSheet spriteSheet;
@@ -176,5 +184,7 @@ namespace ThreeSheeps.Spritesse.Scene
         private float timeElapsed;
         private AnimationSequence currentSequence;
         private int currentFrame;
+
+        #endregion
     }
 }

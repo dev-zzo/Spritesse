@@ -1,18 +1,18 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 
 namespace ThreeSheeps.Spritesse.Scene
 {
     public interface ISceneService
     {
         /// <summary>
-        /// Wipe everything from the scene.
+        /// ContentManager instance to be used to load scene related content.
         /// </summary>
-        void Clear();
+        ContentManager Content { get; }
         /// <summary>
-        /// Load location content.
+        /// Commands the scene (and objects added) to load all content.
         /// </summary>
-        /// <param name="name"></param>
-        void LoadLocation(string name);
+        void LoadContent();
         /// <summary>
         /// Add a scene object.
         /// </summary>
@@ -23,5 +23,9 @@ namespace ThreeSheeps.Spritesse.Scene
         /// </summary>
         /// <param name="obj"></param>
         void RemoveObject(ISceneObject obj);
+        /// <summary>
+        /// Wipe everything from the scene.
+        /// </summary>
+        void Clear();
     }
 }

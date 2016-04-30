@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 
 namespace ThreeSheeps.Spritesse.Scene
 {
@@ -6,6 +7,8 @@ namespace ThreeSheeps.Spritesse.Scene
     {
         Point Position { get; set; }
 
-        void Update(GameTime gameTime, SceneState sceneState);
+        void LoadContent(ContentManager manager);
+
+        void Update(GameTime gameTime);
     }
 }
