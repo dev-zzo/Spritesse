@@ -46,8 +46,32 @@ namespace ThreeSheeps.Spritesse.Graphics
         public override void Initialize()
         {
             base.Initialize();
-            this.spriteBatch = this.context.SpriteBatch = new SpriteBatch(this.Game.GraphicsDevice);
             this.camera = this.Game.Services.GetService(typeof(ISceneCameraService)) as ISceneCameraService;
+
+            GraphicsDevice gd = this.Game.GraphicsDevice;
+
+            this.spriteBatch = this.context.SpriteBatch = new SpriteBatch(gd);
+
+            int viewWidth = gd.PresentationParameters.BackBufferWidth / 2;
+            int viewHeight = gd.PresentationParameters.BackBufferHeight / 2;
+            this.sceneRenderViewport = new Viewport(0, 0, viewWidth, viewHeight);
+
+            this.sceneRenderTarget = new RenderTarget2D(gd,
+                (int)MathHelper.RountToPowerOfTwo((uint)viewWidth),
+                (int)MathHelper.RountToPowerOfTwo((uint)viewHeight));
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                lock (this)
+                {
+                    this.sceneRenderTarget.Dispose();
+                    this.spriteBatch.Dispose();
+                }
+            }
+            base.Dispose(disposing);
         }
 
         public override void Update(GameTime gameTime)
@@ -61,8 +85,12 @@ namespace ThreeSheeps.Spritesse.Graphics
 
         public override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
+            this.DrawScene();
+            this.PostProcess();
+        }
 
+        protected virtual void DrawScene()
+        {
             // NOTE: Positive values translate the view up/left.
             Vector3 cameraTranslation = Vector3.Zero;
             if (camera != null)
@@ -73,6 +101,11 @@ namespace ThreeSheeps.Spritesse.Graphics
                 cameraTranslation.Y = cameraView.Height / 2 - cameraPosition.Y;
             }
             Matrix cameraTransform = Matrix.CreateTranslation(cameraTranslation);
+
+            GraphicsDevice gd = this.Game.GraphicsDevice;
+            Viewport defaultViewport = gd.Viewport;
+            gd.Viewport = this.sceneRenderViewport;
+            gd.SetRenderTarget(this.sceneRenderTarget);
 
             this.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, cameraTransform);
             this.DrawLayers(this.backLayers);
@@ -86,7 +119,8 @@ namespace ThreeSheeps.Spritesse.Graphics
             this.DrawLayers(this.foreLayers);
             this.spriteBatch.End();
 
-            this.PostProcess();
+            gd.Viewport = defaultViewport;
+            gd.SetRenderTarget(null);
         }
 
         private void DrawLayers(IList<IRenderable> layers)
@@ -105,7 +139,7 @@ namespace ThreeSheeps.Spritesse.Graphics
             }
         }
 
-        private void PostProcess()
+        protected virtual void PostProcess()
         {
         }
 
@@ -113,6 +147,8 @@ namespace ThreeSheeps.Spritesse.Graphics
         private readonly IList<IRenderable> foreLayers = new List<IRenderable>();
         private readonly ISet<IRenderable> objects = new HashSet<IRenderable>();
         private SpriteBatch spriteBatch;
+        private Viewport sceneRenderViewport;
+        private RenderTarget2D sceneRenderTarget;
         private ISceneCameraService camera;
         private SceneRenderContext context = new SceneRenderContext();
     }
