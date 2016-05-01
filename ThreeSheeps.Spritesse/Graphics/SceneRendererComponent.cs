@@ -47,16 +47,15 @@ namespace ThreeSheeps.Spritesse.Graphics
         {
             base.Initialize();
             this.spriteBatch = this.context.SpriteBatch = new SpriteBatch(this.Game.GraphicsDevice);
+            this.camera = this.Game.Services.GetService(typeof(ISceneCameraService)) as ISceneCameraService;
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-
-            ISceneCameraService camera = this.Game.Services.GetService(typeof(ISceneCameraService)) as ISceneCameraService;
-            if (camera != null)
+            if (this.camera != null)
             {
-                this.context.CameraRectangle = camera.ViewRectangle;
+                this.context.CameraRectangle = this.camera.ViewRectangle;
             }
         }
 
@@ -64,15 +63,26 @@ namespace ThreeSheeps.Spritesse.Graphics
         {
             base.Draw(gameTime);
 
-            this.spriteBatch.Begin();
+            // NOTE: Positive values translate the view up/left.
+            Vector3 cameraTranslation = Vector3.Zero;
+            if (camera != null)
+            {
+                Rectangle cameraView = camera.ViewRectangle;
+                Point cameraPosition = camera.Position;
+                cameraTranslation.X = cameraView.Width / 2 - cameraPosition.X;
+                cameraTranslation.Y = cameraView.Height / 2 - cameraPosition.Y;
+            }
+            Matrix cameraTransform = Matrix.CreateTranslation(cameraTranslation);
+
+            this.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, cameraTransform);
             this.DrawLayers(this.backLayers);
             this.spriteBatch.End();
 
-            this.spriteBatch.Begin();
+            this.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, cameraTransform);
             this.DrawObjects(this.objects);
             this.spriteBatch.End();
 
-            this.spriteBatch.Begin();
+            this.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, cameraTransform);
             this.DrawLayers(this.foreLayers);
             this.spriteBatch.End();
 
@@ -103,6 +113,7 @@ namespace ThreeSheeps.Spritesse.Graphics
         private readonly IList<IRenderable> foreLayers = new List<IRenderable>();
         private readonly ISet<IRenderable> objects = new HashSet<IRenderable>();
         private SpriteBatch spriteBatch;
+        private ISceneCameraService camera;
         private SceneRenderContext context = new SceneRenderContext();
     }
 }
