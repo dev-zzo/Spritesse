@@ -143,7 +143,7 @@ namespace ThreeSheeps.Spritesse.Graphics
 
         protected virtual void PostProcess()
         {
-            this.spriteBatch.Begin();
+            this.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, null, null);
             this.spriteBatch.Draw(this.sceneRenderTarget,
                 this.Game.GraphicsDevice.Viewport.Bounds,
                 this.sceneRenderViewport.Bounds,
