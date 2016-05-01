@@ -31,7 +31,22 @@ namespace ThreeSheeps.Spritesse.Scene
             }
         }
 
+        public void AttachToObject(ISceneObject obj)
+        {
+            this.attachedTo = obj;
+        }
+
         #endregion
 
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+            if (this.attachedTo != null)
+            {
+                this.Position = this.attachedTo.Position;
+            }
+        }
+
+        private ISceneObject attachedTo;
     }
 }

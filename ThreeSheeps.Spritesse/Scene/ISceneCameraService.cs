@@ -21,5 +21,11 @@ namespace ThreeSheeps.Spritesse.Scene
         /// View rectangle = area visible on the screen.
         /// </summary>
         Rectangle ViewRectangle { get; }
+
+        /// <summary>
+        /// Make the camera follow the given scene object.
+        /// </summary>
+        /// <param name="obj"></param>
+        void AttachToObject(ISceneObject obj);
     }
 }
