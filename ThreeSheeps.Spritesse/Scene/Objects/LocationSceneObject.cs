@@ -6,12 +6,18 @@ using ThreeSheeps.Spritesse.Graphics;
 
 namespace ThreeSheeps.Spritesse.Scene.Objects
 {
+    /// <summary>
+    /// Encapsulates and represents a game location.
+    /// This includes visual, physical, and audio data.
+    /// </summary>
     public class LocationSceneObject : ISceneObject, IRenderableSceneObject
     {
         public LocationSceneObject(string assetName)
         {
             this.assetName = assetName;
         }
+
+        #region ISceneObject implementation
 
         public Point Position { get; set; }
 
@@ -30,6 +36,14 @@ namespace ThreeSheeps.Spritesse.Scene.Objects
             }
         }
 
+        public void Update(GameTime gameTime)
+        {
+        }
+
+        #endregion
+
+        #region IRenderableSceneObject implementation
+
         public void RegisterRenderables(ISceneRendererService service)
         {
             foreach (IRenderable obj in this.bgLayers)
@@ -45,9 +59,7 @@ namespace ThreeSheeps.Spritesse.Scene.Objects
             this.fgLayers.Clear();
         }
 
-        public void Update(GameTime gameTime)
-        {
-        }
+        #endregion
 
         private string assetName;
         private Location location;

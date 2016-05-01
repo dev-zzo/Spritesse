@@ -13,7 +13,7 @@ namespace ThreeSheeps.Spritesse.Graphics
         bool Visible { get; set; }
 
         /// <summary>
-        /// Bounding box for visibility testing.
+        /// Bounding box for visibility testing by the scene renderer.
         /// </summary>
         Rectangle BoundingBox { get; }
 

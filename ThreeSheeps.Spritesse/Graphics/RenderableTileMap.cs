@@ -5,6 +5,9 @@ using ThreeSheeps.Spritesse.Content;
 
 namespace ThreeSheeps.Spritesse.Graphics
 {
+    /// <summary>
+    /// Represents a tile map instance on the screen.
+    /// </summary>
     public class RenderableTileMap : IRenderable
     {
         public RenderableTileMap(TileMap asset)

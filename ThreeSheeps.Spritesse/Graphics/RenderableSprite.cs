@@ -4,12 +4,15 @@ using ThreeSheeps.Spritesse.Content;
 
 namespace ThreeSheeps.Spritesse.Graphics
 {
+    /// <summary>
+    /// Implements a single (animated) sprite on the screen.
+    /// </summary>
     public class RenderableSprite : IRenderable
     {
         public RenderableSprite(SpriteSheet spriteSheet, int spriteIndex, AnimationSet animationSet = null, string animationName = null)
         {
             this.spriteSheet = spriteSheet;
-            this.SpriteIndex = spriteIndex;
+            this.spriteIndex = spriteIndex;
             this.Visible = true;
             this.TintColor = Color.White;
             this.Effects = SpriteEffects.None;
@@ -41,15 +44,13 @@ namespace ThreeSheeps.Spritesse.Graphics
         /// </summary>
         public SpriteEffects Effects { get; set; }
 
-        public int SpriteIndex { get; set; }
-
         public bool Visible { get; set; }
 
         public Rectangle BoundingBox
         {
             get
             {
-                SpriteDefinition definition = spriteSheet.Definitions[this.SpriteIndex];
+                SpriteDefinition definition = spriteSheet.Definitions[this.spriteIndex];
                 return new Rectangle(
                     this.Position.X - definition.PivotOffset.X,
                     this.Position.Y - definition.PivotOffset.Y,
@@ -120,7 +121,7 @@ namespace ThreeSheeps.Spritesse.Graphics
         /// <param name="context">Rendering context object</param>
         public void Draw(SceneRenderContext context)
         {
-            SpriteDefinition definition = spriteSheet.Definitions[this.SpriteIndex];
+            SpriteDefinition definition = spriteSheet.Definitions[this.spriteIndex];
             // Issue a draw call
             context.SpriteBatch.Draw(
                 spriteSheet.Texture,
@@ -176,10 +177,11 @@ namespace ThreeSheeps.Spritesse.Graphics
             }
             // Update the value
             this.currentFrame = currentFrame;
-            this.SpriteIndex = this.currentSequence.Frames[currentFrame].SpriteIndex;
+            this.spriteIndex = this.currentSequence.Frames[currentFrame].SpriteIndex;
         }
 
         private SpriteSheet spriteSheet;
+        private int spriteIndex;
         private AnimationSet animationSet;
         private float timeElapsed;
         private AnimationSequence currentSequence;
