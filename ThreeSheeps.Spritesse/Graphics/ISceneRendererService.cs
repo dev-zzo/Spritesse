@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Microsoft.Xna.Framework.Graphics;
 
 namespace ThreeSheeps.Spritesse.Graphics
 {
     public interface ISceneRendererService
     {
+        /// <summary>
+        /// The viewable area used to render scene into.
+        /// </summary>
+        Viewport Viewport { get; }
         /// <summary>
         /// Adds a background layer object; these are drawn first. Typically, this is a tile map.
         /// </summary>

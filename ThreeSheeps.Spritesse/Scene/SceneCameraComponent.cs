@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using ThreeSheeps.Spritesse.Graphics;
 
 namespace ThreeSheeps.Spritesse.Scene
 {
@@ -11,25 +12,13 @@ namespace ThreeSheeps.Spritesse.Scene
             : base(game)
         {
             game.Services.AddService(typeof(ISceneCameraService), this);
-            this.Scale = 1.0f;
         }
 
         #region ISceneCameraService implementation
 
         public Point Position { get; set; }
 
-        public float Scale { get; set; }
-
-        public Rectangle ViewRectangle
-        {
-            get
-            {
-                Rectangle clientBounds = this.Game.Window.ClientBounds;
-                int width = (int)(0.5f + clientBounds.Width / this.Scale);
-                int height = (int)(0.5f + clientBounds.Height / this.Scale);
-                return new Rectangle(this.Position.X - width / 2, this.Position.Y - height / 2, width, height);
-            }
-        }
+        public Rectangle ViewRectangle { get { return this.viewRectangle; } }
 
         public void AttachToObject(ISceneObject obj)
         {
@@ -38,6 +27,12 @@ namespace ThreeSheeps.Spritesse.Scene
 
         #endregion
 
+        public override void Initialize()
+        {
+            base.Initialize();
+            this.renderer = this.Game.Services.GetService(typeof(ISceneRendererService)) as ISceneRendererService;
+        }
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -45,8 +40,14 @@ namespace ThreeSheeps.Spritesse.Scene
             {
                 this.Position = this.attachedTo.Position;
             }
+            this.viewRectangle.Width = this.renderer.Viewport.Width;
+            this.viewRectangle.Height = this.renderer.Viewport.Height;
+            this.viewRectangle.X = this.Position.X - this.viewRectangle.Width / 2;
+            this.viewRectangle.Y = this.Position.Y - this.viewRectangle.Height / 2;
         }
 
+        private ISceneRendererService renderer;
+        private Rectangle viewRectangle;
         private ISceneObject attachedTo;
     }
 }

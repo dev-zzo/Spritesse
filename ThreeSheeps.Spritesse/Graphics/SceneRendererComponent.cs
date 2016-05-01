@@ -16,6 +16,8 @@ namespace ThreeSheeps.Spritesse.Graphics
             game.Services.AddService(typeof(ISceneRendererService), this);
         }
 
+        public Viewport Viewport { get { return this.sceneRenderViewport; } }
+
         public void RegisterObject(IRenderable obj)
         {
             this.objects.Add(obj);
@@ -104,8 +106,8 @@ namespace ThreeSheeps.Spritesse.Graphics
 
             GraphicsDevice gd = this.Game.GraphicsDevice;
             Viewport defaultViewport = gd.Viewport;
-            gd.Viewport = this.sceneRenderViewport;
             gd.SetRenderTarget(this.sceneRenderTarget);
+            gd.Viewport = this.sceneRenderViewport;
 
             this.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, cameraTransform);
             this.DrawLayers(this.backLayers);
@@ -119,8 +121,8 @@ namespace ThreeSheeps.Spritesse.Graphics
             this.DrawLayers(this.foreLayers);
             this.spriteBatch.End();
 
-            gd.Viewport = defaultViewport;
             gd.SetRenderTarget(null);
+            gd.Viewport = defaultViewport;
         }
 
         private void DrawLayers(IList<IRenderable> layers)
@@ -141,6 +143,12 @@ namespace ThreeSheeps.Spritesse.Graphics
 
         protected virtual void PostProcess()
         {
+            this.spriteBatch.Begin();
+            this.spriteBatch.Draw(this.sceneRenderTarget,
+                this.Game.GraphicsDevice.Viewport.Bounds,
+                this.sceneRenderViewport.Bounds,
+                Color.White);
+            this.spriteBatch.End();
         }
 
         private readonly IList<IRenderable> backLayers = new List<IRenderable>();

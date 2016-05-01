@@ -13,11 +13,6 @@ namespace ThreeSheeps.Spritesse.Scene
         Point Position { get; set; }
 
         /// <summary>
-        /// Zoom factor.
-        /// </summary>
-        float Scale { get; set; }
-
-        /// <summary>
         /// View rectangle = area visible on the screen.
         /// </summary>
         Rectangle ViewRectangle { get; }
