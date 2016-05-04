@@ -10,7 +10,14 @@ namespace ThreeSheeps.Spritesse.Physics
         }
 
         public PhysicalCircle(ICollisionResolverService resolver, CreationInfo info)
-            : base(resolver, info)
+            : this(info)
+        {
+            this.resolver = resolver;
+            resolver.Insert(this);
+        }
+
+        private PhysicalCircle(CreationInfo info)
+            : base(info)
         {
             this.radius = info.Radius;
         }

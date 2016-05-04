@@ -10,7 +10,14 @@ namespace ThreeSheeps.Spritesse.Physics
         }
 
         public PhysicalAxisAlignedBox(ICollisionResolverService resolver, CreationInfo info)
-            : base(resolver, info)
+            : this(info)
+        {
+            this.resolver = resolver;
+            resolver.Insert(this);
+        }
+
+        private PhysicalAxisAlignedBox(CreationInfo info)
+            : base(info)
         {
             this.halfDims = info.Dimensions * 0.5f;
         }

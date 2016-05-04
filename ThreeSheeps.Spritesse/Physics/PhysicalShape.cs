@@ -12,12 +12,16 @@ namespace ThreeSheeps.Spritesse.Physics
             public Vector2 Position;
         }
 
-        protected PhysicalShape(ICollisionResolverService resolver, CreationInfo info)
+        protected PhysicalShape(CreationInfo info)
         {
-            this.resolver = resolver;
             this.canSendCollisions = info.SendCollisions;
             this.canReceiveCollisions = info.ReceiveCollisions;
             this.position = info.Position;
+
+            if (this.canReceiveCollisions)
+            {
+                this.collisions = new List<CollisionInformation>();
+            }
         }
 
         public bool CanSendCollisions
@@ -53,7 +57,7 @@ namespace ThreeSheeps.Spritesse.Physics
             // TODO
         }
 
-        private ICollisionResolverService resolver;
+        protected ICollisionResolverService resolver;
         private bool canSendCollisions;
         private bool canReceiveCollisions;
         private Vector2 position;
