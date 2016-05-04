@@ -78,51 +78,31 @@ namespace ThreeSheeps.Spritesse.Physics
 
         protected ISet<PhysicalShape> Receivers { get { return this.receivers; } }
 
-        protected struct CollisionCheckerInfo
-        {
-            public CollisionCheckerInfo(Type type1, Type type2, CheckCollisionDelegate checker)
-            {
-                this.Type1 = type1;
-                this.Type2 = type2;
-                this.Checker = checker;
-            }
-
-            public Type Type1;
-            public Type Type2;
-            public CheckCollisionDelegate Checker;
-        }
-
-        protected virtual void BuildCollisionCheckerList(List<CollisionCheckerInfo> checkers)
-        {
-            checkers.Add(new CollisionCheckerInfo(typeof(PhysicalCircle), typeof(PhysicalCircle),
-                new CheckCollisionDelegate(CollisionChecker.CheckCollisionCC)));
-            checkers.Add(new CollisionCheckerInfo(typeof(PhysicalAxisAlignedBox), typeof(PhysicalCircle),
-                new CheckCollisionDelegate(CollisionChecker.CheckCollisionBC)));
-            checkers.Add(new CollisionCheckerInfo(typeof(PhysicalAxisAlignedBox), typeof(PhysicalAxisAlignedBox),
-                new CheckCollisionDelegate(CollisionChecker.CheckCollisionBB)));
-        }
-
-        private void BuildCollisionCheckers()
-        {
-            List<CollisionCheckerInfo> checkers = new List<CollisionCheckerInfo>();
-            this.BuildCollisionCheckerList(checkers);
-            this.collisionCheckers = checkers.ToArray();
-        }
-
-        private bool CheckCollision(PhysicalShape shape1, PhysicalShape shape2)
+        protected virtual bool CheckCollision(PhysicalShape shape1, PhysicalShape shape2)
         {
             Type shape1Type = shape1.GetType();
             Type shape2Type = shape2.GetType();
 
-            foreach (CollisionCheckerInfo tp in this.collisionCheckers)
+            if (shape1Type == typeof(PhysicalCircle))
             {
-                if (shape1Type == tp.Type1 && shape2Type == tp.Type2)
+                if (shape2Type == typeof(PhysicalCircle))
                 {
-                    return tp.Checker(shape1, shape2);
+                    return CollisionCheckHelper.CheckCollision(shape1 as PhysicalCircle, shape2 as PhysicalCircle);
                 }
-                if (shape1Type == tp.Type2 && shape2Type == tp.Type1)
+                if (shape2Type == typeof(PhysicalAxisAlignedBox))
                 {
-                    return tp.Checker(shape2, shape1);
+                    return CollisionCheckHelper.CheckCollision(shape2 as PhysicalAxisAlignedBox, shape1 as PhysicalCircle);
+                }
+            }
+            else if (shape1Type == typeof(PhysicalAxisAlignedBox))
+            {
+                if (shape2Type == typeof(PhysicalCircle))
+                {
+                    return CollisionCheckHelper.CheckCollision(shape1 as PhysicalAxisAlignedBox, shape2 as PhysicalCircle);
+                }
+                if (shape2Type == typeof(PhysicalAxisAlignedBox))
+                {
+                    return CollisionCheckHelper.CheckCollision(shape1 as PhysicalAxisAlignedBox, shape2 as PhysicalAxisAlignedBox);
                 }
             }
 
@@ -130,7 +110,6 @@ namespace ThreeSheeps.Spritesse.Physics
         }
 
         private readonly ICollisionDatabase database;
-        private CollisionCheckerInfo[] collisionCheckers;
         private readonly ISet<PhysicalShape> receivers = new HashSet<PhysicalShape>();
         private readonly List<PhysicalShape> candidates = new List<PhysicalShape>();
     }
