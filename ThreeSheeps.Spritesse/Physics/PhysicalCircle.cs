@@ -4,7 +4,7 @@ namespace ThreeSheeps.Spritesse.Physics
 {
     public sealed class PhysicalCircle : PhysicalShape
     {
-        public sealed class CreationInfo : PhysicalShape.CreationInfo
+        public new sealed class CreationInfo : PhysicalShape.CreationInfo
         {
             public float Radius;
         }
