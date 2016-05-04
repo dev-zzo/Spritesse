@@ -5,9 +5,9 @@ namespace ThreeSheeps.Spritesse.Physics
 {
     public interface ICollisionDatabase
     {
-        void Insert(PhysicalShape shape, Vector2 position, Vector2 halfDimensions);
+        void Insert(PhysicalShape shape);
 
-        void Update(PhysicalShape shape, Vector2 position, Vector2 halfDimensions);
+        void Update(PhysicalShape shape);
 
         void Remove(PhysicalShape shape);
 
