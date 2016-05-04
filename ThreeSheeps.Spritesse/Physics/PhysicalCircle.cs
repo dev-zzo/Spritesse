@@ -27,6 +27,11 @@ namespace ThreeSheeps.Spritesse.Physics
             get { return new Vector2(this.radius, this.radius); }
         }
 
+        public float Radius
+        {
+            get { return this.radius; }
+        }
+
         private float radius;
     }
 }
