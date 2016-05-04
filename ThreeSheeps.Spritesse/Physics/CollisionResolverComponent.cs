@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace ThreeSheeps.Spritesse.Physics
@@ -79,7 +80,47 @@ namespace ThreeSheeps.Spritesse.Physics
 
         protected virtual bool CheckCollision(PhysicalShape shape1, PhysicalShape shape2)
         {
-            // TODO
+            Type shape1Type = shape1.GetType();
+            Type shape2Type = shape2.GetType();
+
+            if (shape1Type == typeof(PhysicalCircle))
+            {
+                if (shape2Type == typeof(PhysicalCircle))
+                {
+                    return CollisionResolverComponent.CheckCollision(shape1 as PhysicalCircle, shape2 as PhysicalCircle);
+                }
+                if (shape2Type == typeof(PhysicalAxisAlignedBox))
+                {
+                    return CollisionResolverComponent.CheckCollision(shape2 as PhysicalAxisAlignedBox, shape1 as PhysicalCircle);
+                }
+            }
+            if (shape1Type == typeof(PhysicalAxisAlignedBox))
+            {
+                if (shape2Type == typeof(PhysicalCircle))
+                {
+                    return CollisionResolverComponent.CheckCollision(shape1 as PhysicalAxisAlignedBox, shape2 as PhysicalCircle);
+                }
+                if (shape2Type == typeof(PhysicalAxisAlignedBox))
+                {
+                    return CollisionResolverComponent.CheckCollision(shape1 as PhysicalAxisAlignedBox, shape2 as PhysicalAxisAlignedBox);
+                }
+            }
+
+            return false;
+        }
+
+        protected static bool CheckCollision(PhysicalCircle shape1, PhysicalCircle shape2)
+        {
+            return false;
+        }
+
+        protected static bool CheckCollision(PhysicalAxisAlignedBox shape1, PhysicalCircle shape2)
+        {
+            return false;
+        }
+
+        protected static bool CheckCollision(PhysicalAxisAlignedBox shape1, PhysicalAxisAlignedBox shape2)
+        {
             return false;
         }
 
