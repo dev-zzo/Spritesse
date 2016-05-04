@@ -17,5 +17,7 @@ namespace ThreeSheeps.Spritesse
             x |= x >> 16;
             return x + 1;
         }
+
+        public const float SQRT_2 = 1.414216f;
     }
 }

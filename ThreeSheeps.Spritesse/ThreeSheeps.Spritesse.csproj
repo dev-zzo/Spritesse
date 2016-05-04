@@ -75,6 +75,7 @@
     <Compile Include="Graphics\SceneRenderContext.cs" />
     <Compile Include="Graphics\SceneRendererComponent.cs" />
     <Compile Include="MathHelper.cs" />
+    <Compile Include="Physics\CollisionChecker.cs" />
     <Compile Include="Physics\CollisionResolverComponent.cs" />
     <Compile Include="Physics\ICollisionDatabase.cs" />
     <Compile Include="Physics\PhysicalAxisAlignedBox.cs" />

@@ -78,53 +78,59 @@ namespace ThreeSheeps.Spritesse.Physics
 
         protected ISet<PhysicalShape> Receivers { get { return this.receivers; } }
 
-        protected virtual bool CheckCollision(PhysicalShape shape1, PhysicalShape shape2)
+        protected struct CollisionCheckerInfo
+        {
+            public CollisionCheckerInfo(Type type1, Type type2, CheckCollisionDelegate checker)
+            {
+                this.Type1 = type1;
+                this.Type2 = type2;
+                this.Checker = checker;
+            }
+
+            public Type Type1;
+            public Type Type2;
+            public CheckCollisionDelegate Checker;
+        }
+
+        protected virtual void BuildCollisionCheckerList(List<CollisionCheckerInfo> checkers)
+        {
+            checkers.Add(new CollisionCheckerInfo(typeof(PhysicalCircle), typeof(PhysicalCircle),
+                new CheckCollisionDelegate(CollisionChecker.CheckCollisionCC)));
+            checkers.Add(new CollisionCheckerInfo(typeof(PhysicalAxisAlignedBox), typeof(PhysicalCircle),
+                new CheckCollisionDelegate(CollisionChecker.CheckCollisionBC)));
+            checkers.Add(new CollisionCheckerInfo(typeof(PhysicalAxisAlignedBox), typeof(PhysicalAxisAlignedBox),
+                new CheckCollisionDelegate(CollisionChecker.CheckCollisionBB)));
+        }
+
+        private void BuildCollisionCheckers()
+        {
+            List<CollisionCheckerInfo> checkers = new List<CollisionCheckerInfo>();
+            this.BuildCollisionCheckerList(checkers);
+            this.collisionCheckers = checkers.ToArray();
+        }
+
+        private bool CheckCollision(PhysicalShape shape1, PhysicalShape shape2)
         {
             Type shape1Type = shape1.GetType();
             Type shape2Type = shape2.GetType();
 
-            if (shape1Type == typeof(PhysicalCircle))
+            foreach (CollisionCheckerInfo tp in this.collisionCheckers)
             {
-                if (shape2Type == typeof(PhysicalCircle))
+                if (shape1Type == tp.Type1 && shape2Type == tp.Type2)
                 {
-                    return CollisionResolverComponent.CheckCollision(shape1 as PhysicalCircle, shape2 as PhysicalCircle);
+                    return tp.Checker(shape1, shape2);
                 }
-                if (shape2Type == typeof(PhysicalAxisAlignedBox))
+                if (shape1Type == tp.Type2 && shape2Type == tp.Type1)
                 {
-                    return CollisionResolverComponent.CheckCollision(shape2 as PhysicalAxisAlignedBox, shape1 as PhysicalCircle);
-                }
-            }
-            if (shape1Type == typeof(PhysicalAxisAlignedBox))
-            {
-                if (shape2Type == typeof(PhysicalCircle))
-                {
-                    return CollisionResolverComponent.CheckCollision(shape1 as PhysicalAxisAlignedBox, shape2 as PhysicalCircle);
-                }
-                if (shape2Type == typeof(PhysicalAxisAlignedBox))
-                {
-                    return CollisionResolverComponent.CheckCollision(shape1 as PhysicalAxisAlignedBox, shape2 as PhysicalAxisAlignedBox);
+                    return tp.Checker(shape2, shape1);
                 }
             }
 
-            return false;
-        }
-
-        protected static bool CheckCollision(PhysicalCircle shape1, PhysicalCircle shape2)
-        {
-            return false;
-        }
-
-        protected static bool CheckCollision(PhysicalAxisAlignedBox shape1, PhysicalCircle shape2)
-        {
-            return false;
-        }
-
-        protected static bool CheckCollision(PhysicalAxisAlignedBox shape1, PhysicalAxisAlignedBox shape2)
-        {
-            return false;
+            throw new ArgumentException("no applicable collision checkers found");
         }
 
         private readonly ICollisionDatabase database;
+        private CollisionCheckerInfo[] collisionCheckers;
         private readonly ISet<PhysicalShape> receivers = new HashSet<PhysicalShape>();
         private readonly List<PhysicalShape> candidates = new List<PhysicalShape>();
     }
