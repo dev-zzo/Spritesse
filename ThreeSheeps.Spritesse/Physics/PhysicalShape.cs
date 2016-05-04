@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace ThreeSheeps.Spritesse.Physics
 {
-    public abstract class PhysicalShape : IPhysical
+    public abstract class PhysicalShape
     {
         public class CreationInfo
         {

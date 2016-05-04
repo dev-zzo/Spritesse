@@ -7,6 +7,7 @@ namespace ThreeSheeps.Spritesse.Physics
 {
     public struct CollisionInformation
     {
-        public IPhysical Sender;
+        public PhysicalShape Sender;
+        public PhysicalShape Receiver;
     }
 }

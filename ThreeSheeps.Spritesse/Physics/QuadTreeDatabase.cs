@@ -9,22 +9,22 @@ namespace ThreeSheeps.Spritesse.Physics
 
         #region ICollisionDatabase implementation
 
-        public void Insert(IPhysical shape, Vector2 position, Vector2 halfDimensions)
+        public void Insert(PhysicalShape shape, Vector2 position, Vector2 halfDimensions)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(IPhysical shape, Vector2 position, Vector2 halfDimensions)
+        public void Update(PhysicalShape shape, Vector2 position, Vector2 halfDimensions)
         {
             throw new NotImplementedException();
         }
 
-        public void Remove(IPhysical shape)
+        public void Remove(PhysicalShape shape)
         {
             throw new NotImplementedException();
         }
 
-        public void Query(Vector2 position, Vector2 halfDimensions, IList<IPhysical> results)
+        public void Query(Vector2 position, Vector2 halfDimensions, IList<PhysicalShape> results)
         {
             throw new NotImplementedException();
         }

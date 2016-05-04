@@ -7,10 +7,10 @@ namespace ThreeSheeps.Spritesse.Physics
 {
     public interface ICollisionResolverService
     {
-        void Insert(IPhysical shape);
+        void Insert(PhysicalShape shape);
 
-        void Remove(IPhysical shape);
+        void Remove(PhysicalShape shape);
 
-        void Query(IPhysical tester, IList<CollisionInformation> results);
+        void Query(PhysicalShape tester, IList<CollisionInformation> results);
     }
 }

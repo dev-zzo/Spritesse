@@ -13,15 +13,15 @@ namespace ThreeSheeps.Spritesse.Physics
         {
         }
 
-        public void Insert(IPhysical shape)
+        public void Insert(PhysicalShape shape)
         {
         }
 
-        public void Remove(IPhysical shape)
+        public void Remove(PhysicalShape shape)
         {
         }
 
-        public void Query(IPhysical tester, IList<CollisionInformation> results)
+        public void Query(PhysicalShape tester, IList<CollisionInformation> results)
         {
         }
 
