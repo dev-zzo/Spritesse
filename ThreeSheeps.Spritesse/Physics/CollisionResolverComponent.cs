@@ -55,6 +55,10 @@ namespace ThreeSheeps.Spritesse.Physics
 
             foreach (PhysicalShape sender in this.candidates)
             {
+                // Work around self-collision
+                if (sender == tester)
+                    continue;
+
                 if (this.CheckCollision(sender, tester))
                 {
                     CollisionInformation info = new CollisionInformation();
