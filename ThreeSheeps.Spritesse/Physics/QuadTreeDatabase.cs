@@ -10,18 +10,42 @@ namespace ThreeSheeps.Spritesse.Physics
 
         public void Insert(PhysicalShape shape)
         {
+            // Ensure the object can fit into the current root.
             this.ExpandRoot(shape.Position, shape.HalfDimensions);
-            this.Insert(shape, this.root, this.rootCenter, this.rootHalfSize);
+            // Insert it somewhere.
+            this.Insert(shape, this.root);
         }
 
         public void Update(PhysicalShape shape)
         {
-            throw new NotImplementedException();
+            // Find the node.
+            TreeNode node = FindNode(shape, this.root);
+            if (node == null)
+            {
+                // Should probably throw an exception.
+                return;
+            }
+            // Check whether the object is still within the current node
+            if (ContainedIn(shape.Position, shape.HalfDimensions, node.Center, node.HalfSize))
+            {
+                return;
+            }
+
+            // If not, remove and insert it.
+            Remove(shape, node);
+            this.Insert(shape);
         }
 
         public void Remove(PhysicalShape shape)
         {
-            throw new NotImplementedException();
+            // Find the node.
+            TreeNode node = FindNode(shape, this.root);
+            if (node == null)
+            {
+                // Should probably throw an exception.
+                return;
+            }
+            Remove(shape, node);
         }
 
         public void Query(Vector2 position, Vector2 halfDimensions, IList<PhysicalShape> results)
@@ -36,7 +60,15 @@ namespace ThreeSheeps.Spritesse.Physics
         // * Avoid these being garbage collected by keeping a free list.
         private class TreeNode : List<PhysicalShape>
         {
+            public TreeNode(Vector2 center, float halfSize)
+            {
+                this.Center = center;
+                this.HalfSize = halfSize;
+            }
+
             // Keep a reference to the parent node?
+            public Vector2 Center;
+            public float HalfSize;
             public TreeNode[] Children;
         }
 
@@ -49,27 +81,25 @@ namespace ThreeSheeps.Spritesse.Physics
         private void ExpandRoot(Vector2 shapePosition, Vector2 shapeHalfDimensions)
         {
             TreeNode root = this.root;
-            Vector2 rootCenter = this.rootCenter;
-            float rootHalfSize = this.rootHalfSize;
 
-            while (!ContainedIn(shapePosition, shapeHalfDimensions, rootCenter, rootHalfSize))
+            while (!ContainedIn(shapePosition, shapeHalfDimensions, root.Center, root.HalfSize))
             {
-                TreeNode[] children = CreateNewChildren();
-                int index = ChildIndexFromPositionDifference(rootCenter, shapePosition);
-                TreeNode newRoot = children[index];
-                children[index] = root;
-                newRoot.Children = children;
+                // Assume the shape is at the new root's center;
+                // Calculate the offset and subtract it.
+                int index = ChildIndexFromPositionDifference(shapePosition, root.Center);
+                Vector2 newRootCenter = root.Center - ChildOffsetFromIndex(index) * root.HalfSize;
+                // Build children nodes for the new root
+                TreeNode newRoot = this.AllocateNode(newRootCenter, root.HalfSize * 2.0f);
+                newRoot.Children = this.AllocateNodeChildren(newRoot.Center, newRoot.HalfSize);
+                // Dump the unneeded one
+                TreeNode unused = newRoot.Children[index];
+                newRoot.Children[index] = root;
+                this.FreeNode(unused);
+
                 root = newRoot;
-                rootCenter -= ChildOffsetFromIndex(index) * rootHalfSize;
-                rootHalfSize *= 2.0f;
             }
 
-            if (rootHalfSize != this.rootHalfSize)
-            {
-                this.root = root;
-                this.rootCenter = rootCenter;
-                this.rootHalfSize = rootHalfSize;
-            }
+            this.root = root;
         }
 
         /// <summary>
@@ -77,9 +107,7 @@ namespace ThreeSheeps.Spritesse.Physics
         /// </summary>
         /// <param name="shape"></param>
         /// <param name="node"></param>
-        /// <param name="nodeCenter"></param>
-        /// <param name="nodeHalfSize"></param>
-        private void Insert(PhysicalShape shape, TreeNode node, Vector2 nodeCenter, float nodeHalfSize)
+        private void Insert(PhysicalShape shape, TreeNode node)
         {
             // This could be implemented recursively as well.
             // Currently, there are no obvious gains in favor of recursion, though.
@@ -96,32 +124,77 @@ namespace ThreeSheeps.Spritesse.Physics
                         node.Add(shape);
                         break;
                     }
-                    node.Children = CreateNewChildren();
-                    // Redistribute shapes from this node
+                    node.Children = this.AllocateNodeChildren(node.Center, node.HalfSize);
+                    // Redistribute shapes from this node.
+                    // Either the shape will be inserted into the current node, or into one child.
                     int shapeCount = node.Count;
                     while (shapeCount > 0)
                     {
                         PhysicalShape oldShape = node[0];
                         node.RemoveAt(0);
-                        Insert(oldShape, node, nodeCenter, nodeHalfSize);
+                        Insert(oldShape, node);
                         shapeCount--;
                     }
                 }
 
                 // This is an inner node.
                 // Check the children; if not possible, add here.
-                int index = ChildIndexFromPositionDifference(nodeCenter, shape.Position);
-                nodeHalfSize *= 0.5f;
-                nodeCenter += ChildOffsetFromIndex(index) * nodeHalfSize;
-                if (!ContainedIn(shape.Position, shape.HalfDimensions, nodeCenter, nodeHalfSize))
+                int index = ChildIndexFromPositionDifference(node.Center, shape.Position);
+                TreeNode child = node.Children[index];
+                if (!ContainedIn(shape.Position, shape.HalfDimensions, child.Center, child.HalfSize))
                 {
                     node.Add(shape);
                     break;
                 }
                 // Select the new node and continue
+                node = child;
+            }
+        }
+
+        private static TreeNode FindNode(PhysicalShape shape, TreeNode node)
+        {
+            for (; ; )
+            {
+                if (node.Contains(shape))
+                    return node;
+                if (node.Children == null)
+                    return null;
+                int index = ChildIndexFromPositionDifference(node.Center, shape.Position);
                 node = node.Children[index];
             }
         }
+
+        private static void Remove(PhysicalShape shape, TreeNode node)
+        {
+            node.Remove(shape);
+            // TODO: Check for empty nodes that could be freed.
+        }
+
+        #region Memory management
+
+        private TreeNode[] AllocateNodeChildren(Vector2 nodeCenter, float nodeHalfSize)
+        {
+            TreeNode[] children = new TreeNode[4];
+            float childSize = nodeHalfSize * 0.5f;
+            for (int index = 0; index < 4; ++index)
+            {
+                children[index] = this.AllocateNode(ChildCenterFromIndex(index, nodeCenter, nodeHalfSize), childSize);
+            }
+            return children;
+        }
+
+        private TreeNode AllocateNode(Vector2 center, float halfSize)
+        {
+            // TODO: check the free list
+            return new TreeNode(center, halfSize);
+        }
+
+        private void FreeNode(TreeNode node)
+        {
+            // TODO: release to the free list
+        }
+
+        #endregion
 
         /// <summary>
         /// Check whether an object is contained within the container square.
@@ -138,14 +211,6 @@ namespace ThreeSheeps.Spritesse.Physics
             return objectExtent.X <= containerHalfSize && objectExtent.Y <= containerHalfSize;
         }
 
-        private static TreeNode[] CreateNewChildren()
-        {
-            TreeNode[] children = new TreeNode[4];
-            for (int i = 0; i < 4; ++i)
-                children[i] = new TreeNode();
-            return children;
-        }
-
         private static int ChildIndexFromPositionDifference(Vector2 nodeCenter, Vector2 objectCenter)
         {
             return (nodeCenter.X >= objectCenter.X ? 1 : 0) | (nodeCenter.Y >= objectCenter.Y ? 2 : 0);
@@ -156,18 +221,21 @@ namespace ThreeSheeps.Spritesse.Physics
             return offsets[index];
         }
 
+        private static Vector2 ChildCenterFromIndex(int index, Vector2 parentCenter, float parentHalfSize)
+        {
+            return parentCenter + offsets[index] * parentHalfSize;
+        }
+
         private const int MAX_SHAPES_PER_NODE = 4;
 
         private static Vector2[] offsets =
             {
-                new Vector2(-1.0f, -1.0f),
-                new Vector2(-1.0f, +1.0f),
-                new Vector2(+1.0f, -1.0f),
-                new Vector2(+1.0f, +1.0f),
+                new Vector2(-0.5f, -0.5f),
+                new Vector2(+0.5f, -0.5f),
+                new Vector2(-0.5f, +0.5f),
+                new Vector2(+0.5f, +0.5f),
             };
 
         private TreeNode root;
-        private Vector2 rootCenter;
-        private float rootHalfSize;
     }
 }
