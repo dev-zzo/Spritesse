@@ -50,7 +50,7 @@ namespace ThreeSheeps.Spritesse.Physics
 
         public void Query(Vector2 position, Vector2 halfDimensions, IList<PhysicalShape> results)
         {
-            throw new NotImplementedException();
+            Query(position, halfDimensions, results, this.root);
         }
 
         #endregion
@@ -168,6 +168,26 @@ namespace ThreeSheeps.Spritesse.Physics
         {
             node.Remove(shape);
             // TODO: Check for empty nodes that could be freed.
+        }
+
+        private static void Query(Vector2 position, Vector2 halfDimensions, IList<PhysicalShape> results, TreeNode node)
+        {
+            foreach (PhysicalShape shape in node)
+                results.Add(shape);
+            if (node.Children != null)
+            {
+                for (int index = 0; index < 4; ++index)
+                {
+                    TreeNode child = node.Children[index];
+                    // Check whether the query area overlaps with the child's square
+                    Vector2 difference = child.Center - position;
+                    difference = new Vector2(Math.Abs(difference.X), Math.Abs(difference.Y));
+                    if (difference.X - node.HalfSize <= halfDimensions.X && difference.Y - node.HalfSize <= halfDimensions.Y)
+                    {
+                        Query(position, halfDimensions, results, child);
+                    }
+                }
+            }
         }
 
         #region Memory management
