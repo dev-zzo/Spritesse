@@ -7,8 +7,13 @@ namespace ThreeSheeps.Spritesse.Physics
     /// <summary>
     /// This implements the quad-tree spatial database.
     /// </summary>
-    internal sealed class QuadTreeDatabase : ICollisionDatabase
+    public sealed class QuadTreeDatabase : ICollisionDatabase
     {
+        public QuadTreeDatabase(Vector2 initialRootPosition, float initialRootSize)
+        {
+            this.root = this.AllocateNode(null, initialRootPosition, initialRootSize * 0.5f);
+        }
+
         #region ICollisionDatabase implementation
 
         public object Insert(PhysicalShape shape)

@@ -14,7 +14,7 @@ namespace ThreeSheeps.Spritesse.Physics
         }
 
         public CollisionResolverComponent(Game game)
-            : this(game, new QuadTreeDatabase())
+            : this(game, new QuadTreeDatabase(new Vector2(128.0f, 128.0f), 256.0f))
         {
         }
 
