@@ -30,12 +30,11 @@ namespace ThreeSheeps.Spritesse.Scene
         public override void Initialize()
         {
             base.Initialize();
-            this.renderer = this.Game.Services.GetService(typeof(ISceneRendererService)) as ISceneRendererService;
+            this.renderer = this.Game.Services.GetService<ISceneRendererService>();
         }
 
         public override void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
             if (this.attachedTo != null)
             {
                 this.Position = this.attachedTo.Position;

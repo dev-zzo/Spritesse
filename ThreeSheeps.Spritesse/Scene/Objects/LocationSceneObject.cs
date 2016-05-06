@@ -23,7 +23,7 @@ namespace ThreeSheeps.Spritesse.Scene.Objects
 
         public void LoadContent(ContentManager manager, GameServiceContainer services)
         {
-            ISceneRendererService renderer = services.GetService(typeof(ISceneRendererService)) as ISceneRendererService;
+            ISceneRendererService renderer = services.GetService<ISceneRendererService>();
             this.location = manager.Load<Location>(this.assetName);
             foreach (TileMap layerContent in this.location.BackgroundLayers)
             {

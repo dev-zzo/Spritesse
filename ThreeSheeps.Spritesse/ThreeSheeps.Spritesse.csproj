@@ -70,6 +70,7 @@
     <Compile Include="Content\AnimationSet.cs" />
     <Compile Include="Content\Location.cs" />
     <Compile Include="Content\TileMap.cs" />
+    <Compile Include="GameServiceContainerExtensions.cs" />
     <Compile Include="Graphics\IRenderable.cs" />
     <Compile Include="Graphics\ISceneRendererService.cs" />
     <Compile Include="Graphics\SceneRenderContext.cs" />

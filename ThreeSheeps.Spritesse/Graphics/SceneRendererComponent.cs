@@ -48,7 +48,7 @@ namespace ThreeSheeps.Spritesse.Graphics
         public override void Initialize()
         {
             base.Initialize();
-            this.camera = this.Game.Services.GetService(typeof(ISceneCameraService)) as ISceneCameraService;
+            this.camera = this.Game.Services.GetService<ISceneCameraService>();
 
             GraphicsDevice gd = this.Game.GraphicsDevice;
 
@@ -78,7 +78,6 @@ namespace ThreeSheeps.Spritesse.Graphics
 
         public override void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
             if (this.camera != null)
             {
                 this.context.CameraRectangle = this.camera.ViewRectangle;
