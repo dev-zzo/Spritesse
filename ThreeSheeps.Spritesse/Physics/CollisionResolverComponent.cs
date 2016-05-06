@@ -10,6 +10,7 @@ namespace ThreeSheeps.Spritesse.Physics
             : base(game)
         {
             this.database = database;
+            game.Services.AddService(typeof(ICollisionResolverService), this);
         }
 
         public CollisionResolverComponent(Game game)
