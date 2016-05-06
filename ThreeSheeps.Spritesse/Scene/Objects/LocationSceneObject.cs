@@ -10,7 +10,7 @@ namespace ThreeSheeps.Spritesse.Scene.Objects
     /// Encapsulates and represents a game location.
     /// This includes visual, physical, and audio data.
     /// </summary>
-    public class LocationSceneObject : ISceneObject, IRenderableSceneObject
+    public class LocationSceneObject : ISceneObject
     {
         public LocationSceneObject(string assetName)
         {
@@ -21,18 +21,19 @@ namespace ThreeSheeps.Spritesse.Scene.Objects
 
         public Point Position { get; set; }
 
-        public void LoadContent(ContentManager manager)
+        public void LoadContent(ContentManager manager, GameServiceContainer services)
         {
+            ISceneRendererService renderer = services.GetService(typeof(ISceneRendererService)) as ISceneRendererService;
             this.location = manager.Load<Location>(this.assetName);
             foreach (TileMap layerContent in this.location.BackgroundLayers)
             {
                 RenderableTileMap layer = new RenderableTileMap(layerContent);
-                this.bgLayers.Add(layer);
+                renderer.AddBackgroundObject(layer);
             }
             foreach (TileMap layerContent in this.location.ForegroundLayers)
             {
                 RenderableTileMap layer = new RenderableTileMap(layerContent);
-                this.fgLayers.Add(layer);
+                renderer.AddForegroundObject(layer);
             }
         }
 
@@ -42,28 +43,7 @@ namespace ThreeSheeps.Spritesse.Scene.Objects
 
         #endregion
 
-        #region IRenderableSceneObject implementation
-
-        public void RegisterRenderables(ISceneRendererService service)
-        {
-            foreach (IRenderable obj in this.bgLayers)
-            {
-                service.AddBackgroundObject(obj);
-            }
-            foreach (IRenderable obj in this.fgLayers)
-            {
-                service.AddForegroundObject(obj);
-            }
-            // Not needed any more.
-            this.bgLayers.Clear();
-            this.fgLayers.Clear();
-        }
-
-        #endregion
-
         private string assetName;
         private Location location;
-        private readonly List<IRenderable> bgLayers = new List<IRenderable>();
-        private readonly List<IRenderable> fgLayers = new List<IRenderable>();
     }
 }

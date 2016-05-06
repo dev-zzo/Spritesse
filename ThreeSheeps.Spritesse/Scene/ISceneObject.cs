@@ -18,7 +18,8 @@ namespace ThreeSheeps.Spritesse.Scene
         /// to load relevant content.
         /// </summary>
         /// <param name="manager">Content manager instance to use for loading</param>
-        void LoadContent(ContentManager manager);
+        /// <param name="services">Services container to use</param>
+        void LoadContent(ContentManager manager, GameServiceContainer services);
 
         /// <summary>
         /// Will be called by the scene component and is the place

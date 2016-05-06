@@ -23,15 +23,10 @@ namespace ThreeSheeps.Spritesse.Scene
 
         public void LoadContent()
         {
-            ISceneRendererService renderer = this.Game.Services.GetService(typeof(ISceneRendererService)) as ISceneRendererService;
+            GameServiceContainer services = this.Game.Services;
             foreach (ISceneObject obj in this.objects)
             {
-                obj.LoadContent(this.Content);
-                IRenderableSceneObject renderable = obj as IRenderableSceneObject;
-                if (renderer != null && renderable != null)
-                {
-                    renderable.RegisterRenderables(renderer);
-                }
+                obj.LoadContent(this.Content, services);
             }
         }
 
