@@ -11,44 +11,31 @@ namespace ThreeSheeps.Spritesse.Physics
     {
         #region ICollisionDatabase implementation
 
-        public void Insert(PhysicalShape shape)
+        public object Insert(PhysicalShape shape)
         {
             // Ensure the object can fit into the current root.
             this.ExpandRoot(shape.Position, shape.HalfDimensions);
             // Insert it somewhere.
-            this.Insert(shape, this.root);
+            return this.Insert(shape, this.root);
         }
 
-        public void Update(PhysicalShape shape)
+        public object Update(PhysicalShape shape, object node)
         {
-            // Find the node.
-            TreeNode node = FindNode(shape, this.root);
-            if (node == null)
-            {
-                // Should probably throw an exception.
-                return;
-            }
+            TreeNode actualNode = node as TreeNode;
             // Check whether the object is still within the current node
-            if (ContainedIn(shape.Position, shape.HalfDimensions, node.Center, node.HalfSize))
+            if (ContainedIn(shape.Position, shape.HalfDimensions, actualNode.Center, actualNode.HalfSize))
             {
-                return;
+                return actualNode;
             }
 
             // If not, remove and insert it.
-            Remove(shape, node);
-            this.Insert(shape);
+            Remove(shape, actualNode);
+            return this.Insert(shape);
         }
 
-        public void Remove(PhysicalShape shape)
+        public void Remove(PhysicalShape shape, object node)
         {
-            // Find the node.
-            TreeNode node = FindNode(shape, this.root);
-            if (node == null)
-            {
-                // Should probably throw an exception.
-                return;
-            }
-            Remove(shape, node);
+            Remove(shape, node as TreeNode);
         }
 
         public void Query(Vector2 position, Vector2 halfDimensions, IList<PhysicalShape> results)
@@ -110,7 +97,7 @@ namespace ThreeSheeps.Spritesse.Physics
         /// </summary>
         /// <param name="shape"></param>
         /// <param name="node"></param>
-        private void Insert(PhysicalShape shape, TreeNode node)
+        private TreeNode Insert(PhysicalShape shape, TreeNode node)
         {
             // This could be implemented recursively as well.
             // Currently, there are no obvious gains in favor of recursion, though.
@@ -124,7 +111,6 @@ namespace ThreeSheeps.Spritesse.Physics
                     // Try accumulating shapes first.
                     if (node.Count < MAX_SHAPES_PER_NODE)
                     {
-                        node.Add(shape);
                         break;
                     }
                     node.Children = this.AllocateNodeChildren(node.Center, node.HalfSize);
@@ -146,25 +132,14 @@ namespace ThreeSheeps.Spritesse.Physics
                 TreeNode child = node.Children[index];
                 if (!ContainedIn(shape.Position, shape.HalfDimensions, child.Center, child.HalfSize))
                 {
-                    node.Add(shape);
                     break;
                 }
                 // Select the new node and continue
                 node = child;
             }
-        }
 
-        private static TreeNode FindNode(PhysicalShape shape, TreeNode node)
-        {
-            for (; ; )
-            {
-                if (node.Contains(shape))
-                    return node;
-                if (node.Children == null)
-                    return null;
-                int index = ChildIndexFromPositionDifference(node.Center, shape.Position);
-                node = node.Children[index];
-            }
+            node.Add(shape);
+            return node;
         }
 
         private static void Remove(PhysicalShape shape, TreeNode node)

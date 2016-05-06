@@ -12,19 +12,23 @@ namespace ThreeSheeps.Spritesse.Physics
         /// Insert the shape into the database.
         /// </summary>
         /// <param name="shape">Shape reference</param>
-        void Insert(PhysicalShape shape);
+        /// <returns>Internal node reference</returns>
+        object Insert(PhysicalShape shape);
 
         /// <summary>
         /// Update the shape's position within the database.
         /// </summary>
         /// <param name="shape">Shape reference</param>
-        void Update(PhysicalShape shape);
+        /// <param name="node">Previous node reference</param>
+        /// <returns>New internal node reference</returns>
+        object Update(PhysicalShape shape, object node);
 
         /// <summary>
         /// Remove the shape from the database.
         /// </summary>
         /// <param name="shape">Shape reference</param>
-        void Remove(PhysicalShape shape);
+        /// <param name="node">Node reference</param>
+        void Remove(PhysicalShape shape, object node);
 
         /// <summary>
         /// Query the database for shapes that may be within the probe area (AABB).

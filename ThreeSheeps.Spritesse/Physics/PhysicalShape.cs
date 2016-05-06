@@ -75,9 +75,29 @@ namespace ThreeSheeps.Spritesse.Physics
         /// This is called back by the collision resolver when this shape is inserted.
         /// </summary>
         /// <param name="database">Collision database reference</param>
-        internal void OnInserted(ICollisionDatabase database)
+        internal void OnInserted(ICollisionDatabase database, object databaseNode)
         {
             this.database = database;
+            this.databaseNode = databaseNode;
+        }
+
+        /// <summary>
+        /// This is called back by the collision resolver when this shape is removed.
+        /// </summary>
+        internal void OnRemoved()
+        {
+            this.database.Remove(this, this.databaseNode);
+        }
+
+        /// <summary>
+        /// Called whenever anything important for the spatial DB changes.
+        /// This may be e.g. the position and the dimensions.
+        /// </summary>
+        protected void UpdateDatabase()
+        {
+            if (!this.CanSendCollisions)
+                return;
+            this.databaseNode = this.database.Update(this, this.databaseNode);
         }
 
         #region Implementation details
@@ -91,12 +111,11 @@ namespace ThreeSheeps.Spritesse.Physics
             if (this.position == newValue)
                 return;
             this.position = newValue;
-            if (!this.CanSendCollisions)
-                return;
-            this.database.Update(this);
+            this.UpdateDatabase();
         }
 
         private ICollisionDatabase database;
+        private object databaseNode;
         private bool canSendCollisions;
         private bool canReceiveCollisions;
         private Vector2 position;

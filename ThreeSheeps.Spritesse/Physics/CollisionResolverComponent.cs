@@ -21,8 +21,8 @@ namespace ThreeSheeps.Spritesse.Physics
         {
             if (shape.CanSendCollisions)
             {
-                this.Database.Insert(shape);
-                shape.OnInserted(this.Database);
+                object node = this.Database.Insert(shape);
+                shape.OnInserted(this.Database, node);
             }
             if (shape.CanReceiveCollisions)
             {
@@ -34,7 +34,7 @@ namespace ThreeSheeps.Spritesse.Physics
         {
             if (shape.CanSendCollisions)
             {
-                this.Database.Remove(shape);
+                shape.OnRemoved();
             }
             if (shape.CanReceiveCollisions)
             {
