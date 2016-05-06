@@ -2,6 +2,9 @@
 
 namespace ThreeSheeps.Spritesse.Physics
 {
+    /// <summary>
+    /// This is an axis-aligned box shape.
+    /// </summary>
     public sealed class PhysicalAxisAlignedBox : PhysicalShape
     {
         public new sealed class CreationInfo : PhysicalShape.CreationInfo
@@ -9,14 +12,7 @@ namespace ThreeSheeps.Spritesse.Physics
             public Vector2 Dimensions;
         }
 
-        public PhysicalAxisAlignedBox(ICollisionResolverService resolver, CreationInfo info)
-            : this(info)
-        {
-            this.resolver = resolver;
-            resolver.Insert(this);
-        }
-
-        private PhysicalAxisAlignedBox(CreationInfo info)
+        public PhysicalAxisAlignedBox(CreationInfo info)
             : base(info)
         {
             this.halfDims = info.Dimensions * 0.5f;

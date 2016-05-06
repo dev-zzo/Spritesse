@@ -2,6 +2,9 @@
 
 namespace ThreeSheeps.Spritesse.Physics
 {
+    /// <summary>
+    /// This is a circle shape.
+    /// </summary>
     public sealed class PhysicalCircle : PhysicalShape
     {
         public new sealed class CreationInfo : PhysicalShape.CreationInfo
@@ -9,14 +12,7 @@ namespace ThreeSheeps.Spritesse.Physics
             public float Radius;
         }
 
-        public PhysicalCircle(ICollisionResolverService resolver, CreationInfo info)
-            : this(info)
-        {
-            this.resolver = resolver;
-            resolver.Insert(this);
-        }
-
-        private PhysicalCircle(CreationInfo info)
+        public PhysicalCircle(CreationInfo info)
             : base(info)
         {
             this.radius = info.Radius;
@@ -27,6 +23,9 @@ namespace ThreeSheeps.Spritesse.Physics
             get { return new Vector2(this.radius, this.radius); }
         }
 
+        /// <summary>
+        /// Circle's radius.
+        /// </summary>
         public float Radius
         {
             get { return this.radius; }

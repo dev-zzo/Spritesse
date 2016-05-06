@@ -22,18 +22,11 @@ namespace ThreeSheeps.Spritesse.Physics
             if (shape.CanSendCollisions)
             {
                 this.Database.Insert(shape);
+                shape.OnInserted(this.Database);
             }
             if (shape.CanReceiveCollisions)
             {
                 this.Receivers.Add(shape);
-            }
-        }
-
-        public void Update(PhysicalShape shape)
-        {
-            if (shape.CanSendCollisions)
-            {
-                this.Database.Update(shape);
             }
         }
 
@@ -49,17 +42,17 @@ namespace ThreeSheeps.Spritesse.Physics
             }
         }
 
-        public void Query(PhysicalShape tester, IList<CollisionInformation> results)
+        public void Query(PhysicalShape probe, IList<CollisionInformation> results)
         {
-            this.Database.Query(tester.Position, tester.HalfDimensions, this.candidates);
+            this.Database.Query(probe.Position, probe.HalfDimensions, this.candidates);
 
             foreach (PhysicalShape sender in this.candidates)
             {
                 // Work around self-collision
-                if (sender == tester)
+                if (sender == probe)
                     continue;
 
-                if (this.CheckCollision(sender, tester))
+                if (this.CheckCollision(sender, probe))
                 {
                     CollisionInformation info = new CollisionInformation();
                     info.Sender = sender;

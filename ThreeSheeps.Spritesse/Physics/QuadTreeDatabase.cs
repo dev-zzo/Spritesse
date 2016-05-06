@@ -4,6 +4,9 @@ using Microsoft.Xna.Framework;
 
 namespace ThreeSheeps.Spritesse.Physics
 {
+    /// <summary>
+    /// This implements the quad-tree spatial database.
+    /// </summary>
     internal sealed class QuadTreeDatabase : ICollisionDatabase
     {
         #region ICollisionDatabase implementation
