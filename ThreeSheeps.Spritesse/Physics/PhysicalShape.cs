@@ -54,7 +54,7 @@ namespace ThreeSheeps.Spritesse.Physics
             this.position = newValue;
             if (!this.CanSendCollisions)
                 return;
-            // TODO
+            this.resolver.Update(this);
         }
 
         protected ICollisionResolverService resolver;
