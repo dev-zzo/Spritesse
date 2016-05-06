@@ -29,13 +29,17 @@ namespace ThreeSheeps.Spritesse.Physics
             }
 
             // If not, remove and insert it.
-            Remove(shape, actualNode);
-            return this.Insert(shape);
+            actualNode.Remove(shape);
+            object newNode = this.Insert(shape);
+            this.Cleanup(actualNode);
+            return newNode;
         }
 
         public void Remove(PhysicalShape shape, object node)
         {
-            Remove(shape, node as TreeNode);
+            TreeNode actualNode = node as TreeNode;
+            actualNode.Remove(shape);
+            this.Cleanup(actualNode);
         }
 
         public void Query(Vector2 position, Vector2 halfDimensions, IList<PhysicalShape> results)
@@ -50,13 +54,16 @@ namespace ThreeSheeps.Spritesse.Physics
         // * Avoid these being garbage collected by keeping a free list.
         private class TreeNode : List<PhysicalShape>
         {
-            public TreeNode(Vector2 center, float halfSize)
+            public TreeNode(TreeNode parent, Vector2 center, float halfSize)
             {
+                this.Parent = parent;
                 this.Center = center;
                 this.HalfSize = halfSize;
             }
 
-            // Keep a reference to the parent node?
+            public bool IsEmptyLeaf { get { return this.Count == 0 && this.Children == null; } }
+
+            public TreeNode Parent;
             public Vector2 Center;
             public float HalfSize;
             public TreeNode[] Children;
@@ -79,11 +86,12 @@ namespace ThreeSheeps.Spritesse.Physics
                 int index = ChildIndexFromPositionDifference(shapePosition, root.Center);
                 Vector2 newRootCenter = root.Center - ChildOffsetFromIndex(index) * root.HalfSize;
                 // Build children nodes for the new root
-                TreeNode newRoot = this.AllocateNode(newRootCenter, root.HalfSize * 2.0f);
-                newRoot.Children = this.AllocateNodeChildren(newRoot.Center, newRoot.HalfSize);
+                TreeNode newRoot = this.AllocateNode(null, newRootCenter, root.HalfSize * 2.0f);
+                newRoot.Children = this.AllocateNodeChildren(newRoot, newRoot.Center, newRoot.HalfSize);
                 // Dump the unneeded one
                 TreeNode unused = newRoot.Children[index];
                 newRoot.Children[index] = root;
+                root.Parent = newRoot;
                 this.FreeNode(unused);
 
                 root = newRoot;
@@ -113,7 +121,7 @@ namespace ThreeSheeps.Spritesse.Physics
                     {
                         break;
                     }
-                    node.Children = this.AllocateNodeChildren(node.Center, node.HalfSize);
+                    node.Children = this.AllocateNodeChildren(node, node.Center, node.HalfSize);
                     // Redistribute shapes from this node.
                     // Either the shape will be inserted into the current node, or into one child.
                     int shapeCount = node.Count;
@@ -142,12 +150,6 @@ namespace ThreeSheeps.Spritesse.Physics
             return node;
         }
 
-        private static void Remove(PhysicalShape shape, TreeNode node)
-        {
-            node.Remove(shape);
-            // TODO: Check for empty nodes that could be freed.
-        }
-
         private static void Query(Vector2 position, Vector2 halfDimensions, IList<PhysicalShape> results, TreeNode node)
         {
             foreach (PhysicalShape shape in node)
@@ -170,26 +172,55 @@ namespace ThreeSheeps.Spritesse.Physics
 
         #region Memory management
 
-        private TreeNode[] AllocateNodeChildren(Vector2 nodeCenter, float nodeHalfSize)
+        private TreeNode[] AllocateNodeChildren(TreeNode parent, Vector2 nodeCenter, float nodeHalfSize)
         {
             TreeNode[] children = new TreeNode[4];
             float childSize = nodeHalfSize * 0.5f;
             for (int index = 0; index < 4; ++index)
             {
-                children[index] = this.AllocateNode(ChildCenterFromIndex(index, nodeCenter, nodeHalfSize), childSize);
+                children[index] = this.AllocateNode(
+                    parent,
+                    ChildCenterFromIndex(index, nodeCenter, nodeHalfSize),
+                    childSize);
             }
             return children;
         }
 
-        private TreeNode AllocateNode(Vector2 center, float halfSize)
+        private void FreeNodeChildren(TreeNode[] children)
+        {
+        }
+
+        private TreeNode AllocateNode(TreeNode parent, Vector2 center, float halfSize)
         {
             // TODO: check the free list
-            return new TreeNode(center, halfSize);
+            return new TreeNode(parent, center, halfSize);
         }
 
         private void FreeNode(TreeNode node)
         {
             // TODO: release to the free list
+        }
+
+        private void Cleanup(TreeNode node)
+        {
+            bool cleanChildren = true;
+            if (node.Children != null)
+            {
+                for (int index = 0; index < 4; ++index)
+                {
+                    TreeNode child = node.Children[index];
+                    cleanChildren &= child.IsEmptyLeaf;
+                }
+                if (cleanChildren)
+                {
+                    this.FreeNodeChildren(node.Children);
+                    node.Children = null;
+                }
+            }
+            if (node.IsEmptyLeaf && node.Parent != null)
+            {
+                this.Cleanup(node.Parent);
+            }
         }
 
         #endregion
