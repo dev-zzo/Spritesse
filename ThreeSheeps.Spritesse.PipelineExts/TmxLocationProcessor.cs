@@ -125,7 +125,7 @@ namespace ThreeSheeps.Spritesse.PipelineExts
             {
                 StaticRectangleContent content = new StaticRectangleContent();
                 content.Dimensions = new Vector2(maybeRect.Dimensions.X, maybeRect.Dimensions.Y);
-                content.Position = new Vector2(content.Position.X, content.Position.Y) + content.Dimensions * 0.5f;
+                content.Position = new Vector2(maybeRect.Position.X, maybeRect.Position.Y) + content.Dimensions * 0.5f;
                 this.staticGeometry.Add(content);
             }
             else
