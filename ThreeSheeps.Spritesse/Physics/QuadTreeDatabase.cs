@@ -169,16 +169,16 @@ namespace ThreeSheeps.Spritesse.Physics
         private static void Query(Vector2 position, Vector2 halfDimensions, IList<PhysicalShape> results, TreeNode node)
         {
             foreach (PhysicalShape shape in node)
+            {
                 results.Add(shape);
+            }
+
             if (node.Children != null)
             {
                 for (int index = 0; index < 4; ++index)
                 {
                     TreeNode child = node.Children[index];
-                    // Check whether the query area overlaps with the child's square
-                    Vector2 difference = child.Center - position;
-                    difference = new Vector2(Math.Abs(difference.X), Math.Abs(difference.Y));
-                    if (difference.X - node.HalfSize <= halfDimensions.X && difference.Y - node.HalfSize <= halfDimensions.Y)
+                    if (Overlaps(position, halfDimensions, child.Center, child.HalfSize))
                     {
                         Query(position, halfDimensions, results, child);
                     }
@@ -256,6 +256,15 @@ namespace ThreeSheeps.Spritesse.Physics
             objectOffset.Y = Math.Abs(objectOffset.Y);
             Vector2 mostDistantPoint = objectOffset + objectHalfDimensions;
             return mostDistantPoint.X <= containerHalfSize && mostDistantPoint.Y <= containerHalfSize;
+        }
+
+        private static bool Overlaps(Vector2 objectCenter, Vector2 objectHalfDimensions, Vector2 containerCenter, float containerHalfSize)
+        {
+            Vector2 objectOffset = objectCenter - containerCenter;
+            objectOffset.X = Math.Abs(objectOffset.X);
+            objectOffset.Y = Math.Abs(objectOffset.Y);
+            Vector2 closestPoint = objectOffset - objectHalfDimensions;
+            return closestPoint.X <= containerHalfSize && closestPoint.Y <= containerHalfSize;
         }
 
         private static int ChildIndexFromPositionDifference(Vector2 nodeCenter, Vector2 objectCenter)
