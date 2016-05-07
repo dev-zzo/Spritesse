@@ -1,10 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Diagnostics;
+using Microsoft.Xna.Framework;
 
 namespace ThreeSheeps.Spritesse.Physics
 {
     /// <summary>
     /// This is a circle shape.
     /// </summary>
+    [DebuggerDisplay("Circle at ({Position.X}, {Position.Y}), radius {Radius}")]
     public sealed class PhysicalCircle : PhysicalShape
     {
         public new sealed class CreationInfo : PhysicalShape.CreationInfo
