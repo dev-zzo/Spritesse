@@ -10,7 +10,7 @@ namespace ThreeSheeps.Tiled
         {
             TxxObjectGroupContent group = new TxxObjectGroupContent();
 
-            group.Name = root.Attributes["name"].Value;
+            group.Name = root.GetStringAttribute("name");
             group.Opacity = root.ParseFloatAttribute("opacity", 1.0f);
             group.Visible = root.ParseBoolAttribute("visible", true);
             group.RenderingOffset.X = root.ParseIntAttribute("offsetx");

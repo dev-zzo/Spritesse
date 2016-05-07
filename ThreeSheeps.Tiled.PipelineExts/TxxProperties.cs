@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml;
+using Microsoft.Xna.Framework.Content.Pipeline;
 
 namespace ThreeSheeps.Tiled
 {
@@ -18,7 +20,12 @@ namespace ThreeSheeps.Tiled
                 TxxProperties props = new TxxProperties();
                 foreach (XmlNode child in root.ChildNodes)
                 {
-                    props.Add(child.Attributes["name"].Value, child.Attributes["value"].Value);
+                    XmlNode nameNode = child.Attributes["name"];
+                    if (nameNode == null || String.IsNullOrWhiteSpace(nameNode.Value))
+                    {
+                        throw new InvalidContentException("found a property without a name");
+                    }
+                    props.Add(nameNode.Value, child.GetStringAttribute("value"));
                 }
                 return props;
             }

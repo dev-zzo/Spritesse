@@ -38,7 +38,7 @@ namespace ThreeSheeps.Tiled
         {
             TsxTileSetContent content = this.tileset;
             content.Properties = TxxProperties.FromParentXml(root);
-            content.Name = root.Attributes["name"].Value;
+            content.Name = root.GetStringAttribute("name");
             content.TileSize.X = root.ParseIntAttribute("tilewidth");
             content.TileSize.Y = root.ParseIntAttribute("tileheight");
             content.Spacing = root.ParseIntAttribute("spacing");
@@ -61,7 +61,7 @@ namespace ThreeSheeps.Tiled
                 foreach (XmlNode node in terrainTypes.SelectNodes("terrain"))
                 {
                     TsxTerrainContent terrain = new TsxTerrainContent();
-                    terrain.Name = root.Attributes["name"].Value;
+                    terrain.Name = root.GetStringAttribute("name");
                     terrain.TileId = root.ParseIntAttribute("tile");
                     terrain.Properties = TxxProperties.FromParentXml(node);
                     terrains.Add(terrain);

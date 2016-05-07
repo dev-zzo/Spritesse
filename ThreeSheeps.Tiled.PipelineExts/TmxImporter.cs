@@ -28,7 +28,7 @@ namespace ThreeSheeps.Tiled
 
             TmxMapContent map = new TmxMapContent();
             this.map = map;
-            map.Orientation = (TmxMapOrientation)Enum.Parse(typeof(TmxMapOrientation), root.Attributes["orientation"].Value, true);
+            map.Orientation = (TmxMapOrientation)Enum.Parse(typeof(TmxMapOrientation), root.GetStringAttribute("orientation"), true);
             map.MapSize.X = root.ParseIntAttribute("width");
             map.MapSize.Y = root.ParseIntAttribute("height");
             map.TileSize.X = root.ParseIntAttribute("tilewidth");
@@ -91,14 +91,14 @@ namespace ThreeSheeps.Tiled
                 TsxImporter importer = new TsxImporter();
                 embeddedReference.TileSet = importer.Import(root, context);
             }
-            reference.FirstGid = int.Parse(root.Attributes["firstgid"].Value);
+            reference.FirstGid = root.ParseIntAttribute("firstgid", 1);
             return reference;
         }
 
         private TmxTileLayerContent ImportLayerContent(XmlNode root)
         {
             TmxTileLayerContent layer = new TmxTileLayerContent();
-            layer.Name = root.Attributes["name"].Value;
+            layer.Name = root.GetStringAttribute("name");
             layer.Dimensions.X = root.ParseIntAttribute("width");
             layer.Dimensions.Y = root.ParseIntAttribute("height");
             layer.Tiles = new TmxTileContent[layer.Dimensions.X, layer.Dimensions.Y];
