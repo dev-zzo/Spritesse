@@ -92,7 +92,7 @@ namespace ThreeSheeps.Spritesse.Physics
                 // Calculate the offset and subtract it.
                 int index = ChildIndexFromPositionDifference(shapePosition, root.Center);
                 float newRootHalfSize = 2.0f * root.HalfSize;
-                Vector2 newRootCenter = root.Center + ChildOffsetFromIndex(index) * newRootHalfSize;
+                Vector2 newRootCenter = root.Center - ChildOffsetFromIndex(index) * newRootHalfSize;
                 if (root.IsEmptyLeaf)
                 {
                     // Old root was completely empty, simply rewrite it.
@@ -251,14 +251,16 @@ namespace ThreeSheeps.Spritesse.Physics
         /// <returns></returns>
         private static bool ContainedIn(Vector2 objectCenter, Vector2 objectHalfDimensions, Vector2 containerCenter, float containerHalfSize)
         {
-            Vector2 offset = objectCenter - containerCenter;
-            Vector2 objectExtent = new Vector2(Math.Abs(offset.X), Math.Abs(offset.Y)) + objectHalfDimensions;
-            return objectExtent.X <= containerHalfSize && objectExtent.Y <= containerHalfSize;
+            Vector2 objectOffset = objectCenter - containerCenter;
+            objectOffset.X = Math.Abs(objectOffset.X);
+            objectOffset.Y = Math.Abs(objectOffset.Y);
+            Vector2 mostDistantPoint = objectOffset + objectHalfDimensions;
+            return mostDistantPoint.X <= containerHalfSize && mostDistantPoint.Y <= containerHalfSize;
         }
 
         private static int ChildIndexFromPositionDifference(Vector2 nodeCenter, Vector2 objectCenter)
         {
-            return (nodeCenter.X >= objectCenter.X ? 1 : 0) | (nodeCenter.Y >= objectCenter.Y ? 2 : 0);
+            return (nodeCenter.X < objectCenter.X ? 1 : 0) | (nodeCenter.Y < objectCenter.Y ? 2 : 0);
         }
 
         private static Vector2 ChildOffsetFromIndex(int index)
@@ -268,7 +270,7 @@ namespace ThreeSheeps.Spritesse.Physics
 
         private static Vector2 ChildCenterFromIndex(int index, Vector2 parentCenter, float parentHalfSize)
         {
-            return parentCenter - offsets[index] * parentHalfSize;
+            return parentCenter + offsets[index] * parentHalfSize;
         }
 
         private const int MAX_SHAPES_PER_NODE = 4;
