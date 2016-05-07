@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 
 namespace ThreeSheeps.Spritesse.Physics
@@ -57,6 +58,7 @@ namespace ThreeSheeps.Spritesse.Physics
         // This one has an implementation issue.
         // * It would be much more awesome if this array would be a value type...
         // * Avoid these being garbage collected by keeping a free list.
+        [DebuggerDisplay("({Center.X}, {Center.Y}) {HalfSize}, objects: {Count}")]
         private class TreeNode : List<PhysicalShape>
         {
             public TreeNode(TreeNode parent, Vector2 center, float halfSize)
@@ -89,9 +91,10 @@ namespace ThreeSheeps.Spritesse.Physics
                 // Assume the shape is at the new root's center;
                 // Calculate the offset and subtract it.
                 int index = ChildIndexFromPositionDifference(shapePosition, root.Center);
-                Vector2 newRootCenter = root.Center - ChildOffsetFromIndex(index) * root.HalfSize;
+                float newRootHalfSize = 2.0f * root.HalfSize;
+                Vector2 newRootCenter = root.Center + ChildOffsetFromIndex(index) * newRootHalfSize;
                 // Build children nodes for the new root
-                TreeNode newRoot = this.AllocateNode(null, newRootCenter, root.HalfSize * 2.0f);
+                TreeNode newRoot = this.AllocateNode(null, newRootCenter, newRootHalfSize);
                 newRoot.Children = this.AllocateNodeChildren(newRoot, newRoot.Center, newRoot.HalfSize);
                 // Dump the unneeded one
                 TreeNode unused = newRoot.Children[index];
@@ -257,7 +260,7 @@ namespace ThreeSheeps.Spritesse.Physics
 
         private static Vector2 ChildCenterFromIndex(int index, Vector2 parentCenter, float parentHalfSize)
         {
-            return parentCenter + offsets[index] * parentHalfSize;
+            return parentCenter - offsets[index] * parentHalfSize;
         }
 
         private const int MAX_SHAPES_PER_NODE = 4;
