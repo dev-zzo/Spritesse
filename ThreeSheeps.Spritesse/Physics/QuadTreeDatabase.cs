@@ -93,16 +93,24 @@ namespace ThreeSheeps.Spritesse.Physics
                 int index = ChildIndexFromPositionDifference(shapePosition, root.Center);
                 float newRootHalfSize = 2.0f * root.HalfSize;
                 Vector2 newRootCenter = root.Center + ChildOffsetFromIndex(index) * newRootHalfSize;
-                // Build children nodes for the new root
-                TreeNode newRoot = this.AllocateNode(null, newRootCenter, newRootHalfSize);
-                newRoot.Children = this.AllocateNodeChildren(newRoot, newRoot.Center, newRoot.HalfSize);
-                // Dump the unneeded one
-                TreeNode unused = newRoot.Children[index];
-                newRoot.Children[index] = root;
-                root.Parent = newRoot;
-                this.FreeNode(unused);
-
-                root = newRoot;
+                if (root.IsEmptyLeaf)
+                {
+                    // Old root was completely empty, simply rewrite it.
+                    root.Center = newRootCenter;
+                    root.HalfSize = newRootHalfSize;
+                }
+                else
+                {
+                    TreeNode newRoot = this.AllocateNode(null, newRootCenter, newRootHalfSize);
+                    // Build children nodes for the new root
+                    newRoot.Children = this.AllocateNodeChildren(newRoot, newRoot.Center, newRoot.HalfSize);
+                    // Dump the unneeded one
+                    TreeNode unused = newRoot.Children[index];
+                    newRoot.Children[index] = root;
+                    root.Parent = newRoot;
+                    this.FreeNode(unused);
+                    root = newRoot;
+                }
             }
 
             this.root = root;
