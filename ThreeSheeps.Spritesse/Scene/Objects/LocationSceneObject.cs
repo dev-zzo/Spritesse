@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using ThreeSheeps.Spritesse.Content;
 using ThreeSheeps.Spritesse.Graphics;
+using ThreeSheeps.Spritesse.Physics;
 
 namespace ThreeSheeps.Spritesse.Scene.Objects
 {
@@ -34,6 +35,20 @@ namespace ThreeSheeps.Spritesse.Scene.Objects
             {
                 RenderableTileMap layer = new RenderableTileMap(layerContent);
                 renderer.AddForegroundObject(layer);
+            }
+            ICollisionResolverService collider = services.GetService<ICollisionResolverService>();
+            foreach (PhysicalShape.CreationInfo info in this.location.StaticShapes)
+            {
+                if (info is PhysicalCircle.CreationInfo)
+                {
+                    PhysicalShape obj = new PhysicalCircle(info as PhysicalCircle.CreationInfo);
+                    collider.Insert(obj);
+                }
+                else if (info is PhysicalAxisAlignedBox.CreationInfo)
+                {
+                    PhysicalShape obj = new PhysicalAxisAlignedBox(info as PhysicalAxisAlignedBox.CreationInfo);
+                    collider.Insert(obj);
+                }
             }
         }
 

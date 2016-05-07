@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using ThreeSheeps.Tiled;
+using Microsoft.Xna.Framework;
 
 namespace ThreeSheeps.Spritesse.PipelineExts
 {
@@ -11,29 +12,33 @@ namespace ThreeSheeps.Spritesse.PipelineExts
         {
             LocationContent content = new LocationContent();
 
-            List<ExternalReference<SpriteSheetContent>> spriteSheets = BuildSpriteSheetRefs(input, context);
+            List<ExternalReference<SpriteSheetContent>> spriteSheets = this.BuildSpriteSheetRefs(input, context);
             content.SpriteSheetRefs = spriteSheets;
 
-            List<TileMapContent> bgLayers = new List<TileMapContent>();
-            List<TileMapContent> fgLayers = new List<TileMapContent>();
-            List<TileMapContent> layers = bgLayers;
+            List<TileMapContent> layers = this.bgLayers;
             foreach (TxxLayerContent layer in input.Layers)
             {
                 if (layer is TmxTileLayerContent)
                 {
                     TmxTileLayerContent tileLayer = layer as TmxTileLayerContent;
-                    TileMapContent layerContent = BuildTileMap(input, tileLayer);
+                    TileMapContent layerContent = this.BuildTileMap(input, tileLayer);
                     layers.Add(layerContent);
                 }
                 else if (layer is TxxObjectGroupContent)
                 {
                     // Switch to foreground layers now
-                    layers = fgLayers;
-                    // TODO: handle objects.
+                    layers = this.fgLayers;
+                    
+                    TxxObjectGroupContent objectLayer = layer as TxxObjectGroupContent;
+                    foreach (TxxObjectContent obj in objectLayer.Objects)
+                    {
+                        this.ProcessObject(obj);
+                    }
                 }
             }
-            content.BackgroundLayers = bgLayers;
-            content.ForegroundLayers = fgLayers;
+            content.BackgroundLayers = this.bgLayers;
+            content.ForegroundLayers = this.fgLayers;
+            content.StaticGeometry = this.staticGeometry;
 
             return content;
         }
@@ -51,9 +56,6 @@ namespace ThreeSheeps.Spritesse.PipelineExts
                     throw new InvalidContentException("a location can only contain external tileset references");
                 }
                 ExternalReference<SpriteSheetContent> ssRef = context.BuildAsset<TsxTileSetContent, SpriteSheetContent>(castReference.Source, "TsxSpriteSheetProcessor");
-                // Replace the run-time content type to match.
-                // TODO: Is this the correct way?..
-                //ExternalReference<SpriteSheet> fixedRef = new ExternalReference<SpriteSheet>(ssRef.Filename);
                 spriteSheets.Add(ssRef);
             }
             return spriteSheets;
@@ -86,5 +88,54 @@ namespace ThreeSheeps.Spritesse.PipelineExts
 
             return content;
         }
+
+        private void ProcessObject(TxxObjectContent obj)
+        {
+            string objectType = obj.Type;
+
+            switch (objectType)
+            {
+                case "static":
+                    this.ProcessStaticGeometry(obj);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private void ProcessStaticGeometry(TxxObjectContent obj)
+        {
+            TxxEllipseObjectContent maybeEllipse = obj as TxxEllipseObjectContent;
+            TxxRectangleObjectContent maybeRect = obj as TxxRectangleObjectContent;
+            if (maybeEllipse != null)
+            {
+                if (maybeEllipse.Dimensions.X != maybeEllipse.Dimensions.Y)
+                {
+                    throw new InvalidContentException("only circles are supported as static geometry");
+                }
+                StaticCircleContent content = new StaticCircleContent();
+                content.Radius = maybeEllipse.Dimensions.X * 0.5f;
+                content.Position = new Vector2(
+                    maybeEllipse.Position.X + content.Radius,
+                    maybeEllipse.Position.Y + content.Radius);
+                this.staticGeometry.Add(content);
+            }
+            else if (maybeRect != null)
+            {
+                StaticRectangleContent content = new StaticRectangleContent();
+                content.Dimensions = new Vector2(maybeRect.Dimensions.X, maybeRect.Dimensions.Y);
+                content.Position = new Vector2(content.Position.X, content.Position.Y) + content.Dimensions * 0.5f;
+                this.staticGeometry.Add(content);
+            }
+            else
+            {
+                throw new InvalidContentException("static geometry other than circle or rectangle is not supported");
+            }
+        }
+
+        private readonly List<TileMapContent> bgLayers = new List<TileMapContent>();
+        private readonly List<TileMapContent> fgLayers = new List<TileMapContent>();
+        private readonly List<StaticGeometryContent> staticGeometry = new List<StaticGeometryContent>();
     }
 }

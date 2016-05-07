@@ -9,5 +9,7 @@ namespace ThreeSheeps.Spritesse.PipelineExts
 
         public List<TileMapContent> BackgroundLayers;
         public List<TileMapContent> ForegroundLayers;
+
+        public List<StaticGeometryContent> StaticGeometry;
     }
 }

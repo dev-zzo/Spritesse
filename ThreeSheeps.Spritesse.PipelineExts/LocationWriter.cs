@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using ThreeSheeps.Spritesse.Content;
@@ -13,6 +14,7 @@ namespace ThreeSheeps.Spritesse.PipelineExts
             output.WriteObject<List<ExternalReference<SpriteSheetContent>>>(value.SpriteSheetRefs);
             Write(output, value.BackgroundLayers);
             Write(output, value.ForegroundLayers);
+            Write(output, value.StaticGeometry);
         }
 
         private void Write(ContentWriter output, List<TileMapContent> value)
@@ -44,6 +46,37 @@ namespace ThreeSheeps.Spritesse.PipelineExts
                         output.Write((byte)0xFF);
                     }
                 }
+            }
+        }
+
+        private void Write(ContentWriter output, List<StaticGeometryContent> value)
+        {
+            output.Write(value.Count);
+            foreach (StaticGeometryContent item in value)
+            {
+                Write(output, item);
+            }
+        }
+
+        private void Write(ContentWriter output, StaticGeometryContent value)
+        {
+            StaticCircleContent maybeCircle = value as StaticCircleContent;
+            StaticRectangleContent maybeRect = value as StaticRectangleContent;
+            if (maybeCircle != null)
+            {
+                output.Write((byte)'C');
+                output.Write(value.Position);
+                output.Write(maybeCircle.Radius);
+            }
+            else if (maybeRect != null)
+            {
+                output.Write((byte)'R');
+                output.Write(value.Position);
+                output.Write(maybeRect.Dimensions);
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
         }
 

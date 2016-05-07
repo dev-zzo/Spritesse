@@ -68,6 +68,7 @@ namespace ThreeSheeps.Spritesse.Physics
         {
             foreach (PhysicalShape receiver in this.Receivers)
             {
+                receiver.CollisionList.Clear();
                 this.Query(receiver, receiver.CollisionList);
             }
         }
