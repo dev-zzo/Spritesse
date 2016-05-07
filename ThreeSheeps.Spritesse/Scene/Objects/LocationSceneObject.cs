@@ -20,7 +20,7 @@ namespace ThreeSheeps.Spritesse.Scene.Objects
 
         #region ISceneObject implementation
 
-        public Point Position { get; set; }
+        public Vector2 Position { get; set; }
 
         public void LoadContent(ContentManager manager, GameServiceContainer services)
         {

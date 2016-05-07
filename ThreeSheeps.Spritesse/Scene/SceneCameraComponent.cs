@@ -37,7 +37,7 @@ namespace ThreeSheeps.Spritesse.Scene
         {
             if (this.attachedTo != null)
             {
-                this.Position = this.attachedTo.Position;
+                this.Position = new Point((int)this.attachedTo.Position.X, (int)this.attachedTo.Position.Y);
             }
             this.viewRectangle.Width = this.renderer.Viewport.Width;
             this.viewRectangle.Height = this.renderer.Viewport.Height;

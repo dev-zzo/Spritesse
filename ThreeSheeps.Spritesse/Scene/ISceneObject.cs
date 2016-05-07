@@ -11,7 +11,7 @@ namespace ThreeSheeps.Spritesse.Scene
         /// <summary>
         /// Object position, in pixels.
         /// </summary>
-        Point Position { get; set; }
+        Vector2 Position { get; set; }
 
         /// <summary>
         /// Will be called by the scene component and is the place 
