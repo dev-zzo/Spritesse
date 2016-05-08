@@ -97,8 +97,8 @@ namespace ThreeSheeps.Spritesse.Graphics
             // Calculate tile counts
             // NOTE: Clip tile counts to keep them within bounds
             int tileCountX, tileCountY;
-            tileCountX = Math.Min(1 + (visible.Width / tileSize.X), tileMapDims.X - startTileX);
-            tileCountY = Math.Min(1 + (visible.Height / tileSize.Y), tileMapDims.Y - startTileY);
+            tileCountX = Math.Min(2 + (visible.Width / tileSize.X), tileMapDims.X - startTileX);
+            tileCountY = Math.Min(2 + (visible.Height / tileSize.Y), tileMapDims.Y - startTileY);
             return new Rectangle(startTileX, startTileY, tileCountX, tileCountY);
         }
 
