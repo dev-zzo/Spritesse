@@ -177,7 +177,7 @@ namespace ThreeSheeps.Spritesse.Graphics
             }
             // Update the value
             this.currentFrame = currentFrame;
-            this.spriteIndex = this.currentSequence.Frames[currentFrame].SpriteIndex;
+            this.spriteIndex = frames[currentFrame].SpriteIndex;
         }
 
         private SpriteSheet spriteSheet;

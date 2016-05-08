@@ -21,11 +21,31 @@ namespace ThreeSheeps.Spritesse.Content
     }
 
     /// <summary>
+    /// An event that may be defined within an animation sequence
+    /// </summary>
+    public struct AnimationEvent
+    {
+        /// <summary>
+        /// Event position, in milliseconds
+        /// </summary>
+        public uint Position;
+
+        /// <summary>
+        /// Event name for identification
+        /// </summary>
+        public string Name;
+    }
+
+    /// <summary>
     /// Defines an animation sequence consisting of 1+ frames
     /// </summary>
     public sealed class AnimationSequence
     {
-        internal AnimationSequence(string name, bool looped, AnimationFrame[] frames)
+        internal AnimationSequence(
+            string name,
+            bool looped,
+            AnimationFrame[] frames,
+            AnimationEvent[] events)
         {
             this.Name = name;
             this.Looped = looped;
@@ -46,6 +66,11 @@ namespace ThreeSheeps.Spritesse.Content
         /// Frames defined in the animation sequence
         /// </summary>
         public AnimationFrame[] Frames { get; private set; }
+
+        /// <summary>
+        /// Animation events in the animation sequence
+        /// </summary>
+        public AnimationEvent[] Events { get; private set; }
     }
 
     /// <summary>
@@ -94,7 +119,14 @@ namespace ThreeSheeps.Spritesse.Content
                     frames[frameIndex].SpriteIndex = input.ReadUInt16();
                     frames[frameIndex].Delay = input.ReadUInt16();
                 }
-                animations.Add(new AnimationSequence(name, looped, frames));
+                int eventCount = input.ReadInt32();
+                AnimationEvent[] events = new AnimationEvent[eventCount];
+                for (int eventIndex = 0; eventIndex < eventCount; ++eventIndex)
+                {
+                    events[eventIndex].Position = input.ReadUInt32();
+                    events[eventIndex].Name = input.ReadString();
+                }
+                animations.Add(new AnimationSequence(name, looped, frames, events));
             }
             return animations;
         }

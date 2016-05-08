@@ -20,6 +20,19 @@ namespace ThreeSheeps.Spritesse.PipelineExts
                     output.Write((ushort)frame.SpriteIndex);
                     output.Write((ushort)frame.Delay);
                 }
+                if (seq.Events != null)
+                {
+                    output.Write(seq.Events.Length);
+                    foreach (AnimationEvent e in seq.Events)
+                    {
+                        output.Write(e.Position);
+                        output.Write(e.Name);
+                    }
+                }
+                else
+                {
+                    output.Write((int)0);
+                }
             }
         }
 
