@@ -5,6 +5,12 @@ using ThreeSheeps.Spritesse.Content;
 namespace ThreeSheeps.Spritesse.Graphics
 {
     /// <summary>
+    /// Handles animation events.
+    /// </summary>
+    /// <param name="name">Event name which has occurred</param>
+    public delegate void AnimationEventDelegate(string name);
+
+    /// <summary>
     /// Implements a single (animated) sprite on the screen.
     /// </summary>
     public class RenderableSprite : IRenderable
@@ -72,6 +78,11 @@ namespace ThreeSheeps.Spritesse.Graphics
         public float AnimationSpeed { get; set; }
 
         /// <summary>
+        /// Fired when an event occurs in the currently playing animation.
+        /// </summary>
+        public event AnimationEventDelegate AnimationEventOccurred;
+
+        /// <summary>
         /// Set the specific animation and start playing
         /// </summary>
         /// <param name="set">Animation set content to use</param>
@@ -97,8 +108,9 @@ namespace ThreeSheeps.Spritesse.Graphics
         /// </summary>
         public void ResetAnimation()
         {
-            this.timeElapsed = 0.0f;
+            this.frameTimeElapsed = 0.0f;
             this.currentFrame = 0;
+            this.nextEvent = 0;
         }
 
         #endregion
@@ -111,7 +123,9 @@ namespace ThreeSheeps.Spritesse.Graphics
         {
             if (this.AnimationPlaying)
             {
-                this.UpdateAnimation(gameTime);
+                float elapsedTime = this.AnimationSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                this.UpdateAnimation(elapsedTime);
+                this.UpdateEvents(elapsedTime);
             }
         }
 
@@ -136,18 +150,18 @@ namespace ThreeSheeps.Spritesse.Graphics
 
         #region Implementation details
 
-        private void UpdateAnimation(GameTime gameTime)
+        private void UpdateAnimation(float elapsedTime)
         {
-            // Add the elapsed game time
-            this.timeElapsed += (float)gameTime.ElapsedGameTime.TotalMilliseconds * this.AnimationSpeed;
-            // Check the elapsed time against the current frame's delay
+            // Update elapsed frame time
+            this.frameTimeElapsed += elapsedTime;
+            // Check the elapsed frame time against the current frame's delay
             AnimationFrame[] frames = this.currentSequence.Frames;
             int currentFrame = this.currentFrame;
             float delay = (float)frames[currentFrame].Delay;
-            while (this.timeElapsed > delay)
+            while (this.frameTimeElapsed > delay)
             {
                 // Subtract the delay and advance the frame counter
-                this.timeElapsed -= delay;
+                this.frameTimeElapsed -= delay;
                 int nextFrame = currentFrame + 1;
                 // Check whether we reached the end of animation sequence
                 if (nextFrame >= frames.Length)
@@ -180,12 +194,57 @@ namespace ThreeSheeps.Spritesse.Graphics
             this.spriteIndex = frames[currentFrame].SpriteIndex;
         }
 
+        private void UpdateEvents(float elapsedTime)
+        {
+            if (this.currentSequence.Events == null)
+            {
+                return;
+            }
+
+            // Check remaining events
+            this.eventTimeElapsed += elapsedTime;
+            this.CheckEvents();
+
+            if (this.currentSequence.Looped)
+            {
+                // Handle looping
+                float totalTime = this.currentSequence.TotalTime;
+                while (this.eventTimeElapsed >= totalTime)
+                {
+                    this.eventTimeElapsed -= totalTime;
+                    this.nextEvent = 0;
+                    this.CheckEvents();
+                }
+            }
+        }
+
+        private void CheckEvents()
+        {
+            AnimationEvent[] events = this.currentSequence.Events;
+            int index;
+            for (index = this.nextEvent; index < events.Length; ++index)
+            {
+                if (events[index].Position > this.frameTimeElapsed)
+                    break;
+                // Report the event.
+                if (this.AnimationEventOccurred != null)
+                {
+                    this.AnimationEventOccurred(events[index].Name);
+                }
+            }
+            this.nextEvent = index;
+        }
+
         private SpriteSheet spriteSheet;
         private int spriteIndex;
+
         private AnimationSet animationSet;
-        private float timeElapsed;
+        private float frameTimeElapsed;
         private AnimationSequence currentSequence;
         private int currentFrame;
+
+        private float eventTimeElapsed;
+        private int nextEvent;
 
         #endregion
     }
