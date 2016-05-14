@@ -14,7 +14,7 @@ namespace ThreeSheeps.Spritesse.Content
             List<SpriteSheet> spriteSheets,
             List<TileMap> bgTileMaps,
             List<TileMap> fgTileMaps,
-            List<PhysicalShape.CreationInfo> staticShapes)
+            List<PhysicalShapeInformation> staticShapes)
         {
             this.spriteSheets = spriteSheets;
             this.bgTileMaps = bgTileMaps;
@@ -27,12 +27,12 @@ namespace ThreeSheeps.Spritesse.Content
         public IList<TileMap> BackgroundLayers { get { return this.bgTileMaps; } }
         public IList<TileMap> ForegroundLayers { get { return this.fgTileMaps; } }
 
-        public IList<PhysicalShape.CreationInfo> StaticShapes { get { return this.staticShapes; } }
+        public IList<PhysicalShapeInformation> StaticShapes { get { return this.staticShapes; } }
 
         private List<SpriteSheet> spriteSheets;
         private List<TileMap> bgTileMaps;
         private List<TileMap> fgTileMaps;
-        private List<PhysicalShape.CreationInfo> staticShapes;
+        private List<PhysicalShapeInformation> staticShapes;
     }
 
     public sealed class LocationReader : ContentTypeReader<Location>
@@ -50,7 +50,7 @@ namespace ThreeSheeps.Spritesse.Content
             {
                 fgLayers.Add(ReadLayer(input, spriteSheets));
             }
-            List<PhysicalShape.CreationInfo> staticShapes = new List<PhysicalShape.CreationInfo>();
+            List<PhysicalShapeInformation> staticShapes = new List<PhysicalShapeInformation>();
             for (int shapeCount = input.ReadInt32(); shapeCount > 0; shapeCount--)
             {
                 staticShapes.Add(ReadShape(input));
@@ -86,9 +86,9 @@ namespace ThreeSheeps.Spritesse.Content
             return new TileMap(tileSize, spriteSheets, tiles);
         }
 
-        private static PhysicalShape.CreationInfo ReadShape(ContentReader input)
+        private static PhysicalShapeInformation ReadShape(ContentReader input)
         {
-            PhysicalShape.CreationInfo info;
+            PhysicalShapeInformation info;
             char typeMark = (char)input.ReadByte();
             switch (typeMark)
             {
@@ -106,17 +106,17 @@ namespace ThreeSheeps.Spritesse.Content
             return info;
         }
 
-        private static PhysicalShape.CreationInfo ReadCircle(ContentReader input)
+        private static PhysicalShapeInformation ReadCircle(ContentReader input)
         {
-            PhysicalCircle.CreationInfo info = new PhysicalCircle.CreationInfo();
+            PhysicalCircleInformation info = new PhysicalCircleInformation();
             info.Position = input.ReadVector2();
             info.Radius = input.ReadSingle();
             return info;
         }
 
-        private static PhysicalShape.CreationInfo ReadRectangle(ContentReader input)
+        private static PhysicalShapeInformation ReadRectangle(ContentReader input)
         {
-            PhysicalAxisAlignedBox.CreationInfo info = new PhysicalAxisAlignedBox.CreationInfo();
+            PhysicalBoxInformation info = new PhysicalBoxInformation();
             info.Position = input.ReadVector2();
             info.Dimensions = input.ReadVector2();
             return info;

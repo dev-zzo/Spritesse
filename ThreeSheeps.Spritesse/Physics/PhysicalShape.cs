@@ -6,22 +6,11 @@ namespace ThreeSheeps.Spritesse.Physics
     /// <summary>
     /// This is a base class for all physical shapes.
     /// </summary>
-    public abstract class PhysicalShape
+    internal abstract class PhysicalShape : IPhysicalShape
     {
-        /// <summary>
-        /// This represents creation information for a shape.
-        /// As there maybe a lot of parameters, it is represented as a class
-        /// instead of trying to pass everything via constructor arguments.
-        /// </summary>
-        public class CreationInfo
+        protected PhysicalShape(ICollisionDatabase database, PhysicalShapeInformation info)
         {
-            public bool SendCollisions;
-            public bool ReceiveCollisions;
-            public Vector2 Position;
-        }
-
-        protected PhysicalShape(CreationInfo info)
-        {
+            this.database = database;
             this.canSendCollisions = info.SendCollisions;
             this.canReceiveCollisions = info.ReceiveCollisions;
             this.position = info.Position;
@@ -32,72 +21,48 @@ namespace ThreeSheeps.Spritesse.Physics
             }
         }
 
-        /// <summary>
-        /// Whether this shape can be collided with.
-        /// </summary>
+        #region IPhysicalShape implementation
+
         public bool CanSendCollisions
         {
             get { return this.canSendCollisions; }
         }
 
-        /// <summary>
-        /// Whether this shape can collide with another one.
-        /// </summary>
         public bool CanReceiveCollisions
         {
             get { return this.canReceiveCollisions; }
         }
 
-        /// <summary>
-        /// Shape position.
-        /// </summary>
         public Vector2 Position
         {
             get { return this.position; }
             set { this.UpdatePosition(value); }
         }
 
-        /// <summary>
-        /// The half-dimensions of the shape's axis-aligned bounding box.
-        /// </summary>
+        public Vector2 Dimensions { get { return this.HalfDimensions * 2.0f; } }
+
         public abstract Vector2 HalfDimensions { get; }
 
-        /// <summary>
-        /// For shapes that can receive collisions, a list containing all occurred collisions.
-        /// for other shapes this is null.
-        /// </summary>
         public IList<CollisionInformation> CollisionList
         {
             get { return this.collisions; }
         }
 
-        /// <summary>
-        /// This is called back by the collision resolver when this shape is inserted.
-        /// </summary>
-        /// <param name="database">Collision database reference</param>
-        internal void OnInserted(ICollisionDatabase database, object databaseNode)
-        {
-            this.database = database;
-            this.databaseNode = databaseNode;
-        }
+        #endregion
 
         /// <summary>
-        /// This is called back by the collision resolver when this shape is removed.
+        /// Used internally to manage opaque database information
         /// </summary>
-        internal void OnRemoved()
-        {
-            this.database.Remove(this, this.databaseNode);
-        }
+        internal object DatabaseInfo { get; set; }
 
         /// <summary>
         /// Called whenever anything important for the spatial DB changes.
-        /// This may be e.g. the position and the dimensions.
         /// </summary>
         protected void UpdateDatabase()
         {
             if (!this.CanSendCollisions)
                 return;
-            this.databaseNode = this.database.Update(this, this.databaseNode);
+            this.database.Update(this);
         }
 
         #region Implementation details
@@ -115,7 +80,6 @@ namespace ThreeSheeps.Spritesse.Physics
         }
 
         private ICollisionDatabase database;
-        private object databaseNode;
         private bool canSendCollisions;
         private bool canReceiveCollisions;
         private Vector2 position;

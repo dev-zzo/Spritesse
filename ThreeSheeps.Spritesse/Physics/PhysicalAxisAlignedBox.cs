@@ -7,24 +7,19 @@ namespace ThreeSheeps.Spritesse.Physics
     /// This is an axis-aligned box shape.
     /// </summary>
     [DebuggerDisplay("AAB at ({Position.X}, {Position.Y}), size ({HalfDimensions.X}, {HalfDimensions.Y})")]
-    public sealed class PhysicalAxisAlignedBox : PhysicalShape
+    internal sealed class PhysicalAxisAlignedBox : PhysicalShape
     {
-        public new sealed class CreationInfo : PhysicalShape.CreationInfo
+        public PhysicalAxisAlignedBox(ICollisionDatabase database, PhysicalBoxInformation info)
+            : base(database, info)
         {
-            public Vector2 Dimensions;
-        }
-
-        public PhysicalAxisAlignedBox(CreationInfo info)
-            : base(info)
-        {
-            this.halfDims = info.Dimensions * 0.5f;
+            this.halfDimensions = info.Dimensions * 0.5f;
         }
 
         public override Vector2 HalfDimensions
         {
-            get { return this.halfDims; }
+            get { return this.halfDimensions; }
         }
 
-        private Vector2 halfDims;
+        private Vector2 halfDimensions;
     }
 }

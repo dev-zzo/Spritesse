@@ -6,14 +6,14 @@ namespace ThreeSheeps.Spritesse.Physics
     /// <summary>
     /// A spatial database for shapes.
     /// </summary>
-    public interface ICollisionDatabase
+    internal interface ICollisionDatabase
     {
         /// <summary>
         /// Insert the shape into the database.
         /// </summary>
         /// <param name="shape">Shape reference</param>
         /// <returns>Internal node reference</returns>
-        object Insert(PhysicalShape shape);
+        void Insert(PhysicalShape shape);
 
         /// <summary>
         /// Update the shape's position within the database.
@@ -21,14 +21,14 @@ namespace ThreeSheeps.Spritesse.Physics
         /// <param name="shape">Shape reference</param>
         /// <param name="node">Previous node reference</param>
         /// <returns>New internal node reference</returns>
-        object Update(PhysicalShape shape, object node);
+        void Update(PhysicalShape shape);
 
         /// <summary>
         /// Remove the shape from the database.
         /// </summary>
         /// <param name="shape">Shape reference</param>
         /// <param name="node">Node reference</param>
-        void Remove(PhysicalShape shape, object node);
+        void Remove(PhysicalShape shape);
 
         /// <summary>
         /// Query the database for shapes that may be within the probe area (AABB).

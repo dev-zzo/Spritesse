@@ -37,18 +37,9 @@ namespace ThreeSheeps.Spritesse.Scene.Objects
                 renderer.AddForegroundObject(layer);
             }
             ICollisionResolverService collider = services.GetService<ICollisionResolverService>();
-            foreach (PhysicalShape.CreationInfo info in this.location.StaticShapes)
+            foreach (PhysicalShapeInformation info in this.location.StaticShapes)
             {
-                if (info is PhysicalCircle.CreationInfo)
-                {
-                    PhysicalShape obj = new PhysicalCircle(info as PhysicalCircle.CreationInfo);
-                    collider.Insert(obj);
-                }
-                else if (info is PhysicalAxisAlignedBox.CreationInfo)
-                {
-                    PhysicalShape obj = new PhysicalAxisAlignedBox(info as PhysicalAxisAlignedBox.CreationInfo);
-                    collider.Insert(obj);
-                }
+                IPhysicalShape shape = collider.Create(info);
             }
         }
 

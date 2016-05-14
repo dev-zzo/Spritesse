@@ -7,15 +7,10 @@ namespace ThreeSheeps.Spritesse.Physics
     /// This is a circle shape.
     /// </summary>
     [DebuggerDisplay("Circle at ({Position.X}, {Position.Y}), radius {Radius}")]
-    public sealed class PhysicalCircle : PhysicalShape
+    internal sealed class PhysicalCircle : PhysicalShape
     {
-        public new sealed class CreationInfo : PhysicalShape.CreationInfo
-        {
-            public float Radius;
-        }
-
-        public PhysicalCircle(CreationInfo info)
-            : base(info)
+        public PhysicalCircle(ICollisionDatabase database, PhysicalCircleInformation info)
+            : base(database, info)
         {
             this.radius = info.Radius;
         }

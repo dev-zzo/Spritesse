@@ -87,12 +87,14 @@
     <Compile Include="Physics\CollisionCheckHelper.cs" />
     <Compile Include="Physics\CollisionResolverComponent.cs" />
     <Compile Include="Physics\ICollisionDatabase.cs" />
+    <Compile Include="Physics\IPhysicalShape.cs" />
     <Compile Include="Physics\PhysicalAxisAlignedBox.cs" />
     <Compile Include="Physics\PhysicalCircle.cs" />
     <Compile Include="Physics\PhysicalShape.cs" />
     <Compile Include="Physics\CollisionInformation.cs" />
     <Compile Include="Physics\ICollisionResolverService.cs" />
     <Compile Include="Physics\QuadTreeDatabase.cs" />
+    <Compile Include="Physics\PhysicalShapeInformation.cs" />
     <Compile Include="Scene\ISceneCameraService.cs" />
     <Compile Include="Scene\ISceneObject.cs" />
     <Compile Include="Scene\ISceneService.cs" />

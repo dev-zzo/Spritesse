@@ -4,9 +4,9 @@ using Microsoft.Xna.Framework;
 
 namespace ThreeSheeps.Spritesse.Physics
 {
-    public class CollisionResolverComponent : GameComponent, ICollisionResolverService
+    public sealed class CollisionResolverComponent : GameComponent, ICollisionResolverService
     {
-        public CollisionResolverComponent(Game game, ICollisionDatabase database)
+        internal CollisionResolverComponent(Game game, ICollisionDatabase database)
             : base(game)
         {
             this.database = database;
@@ -18,34 +18,49 @@ namespace ThreeSheeps.Spritesse.Physics
         {
         }
 
-        public void Insert(PhysicalShape shape)
+        public IPhysicalShape Create(PhysicalShapeInformation info)
         {
-            if (shape.CanSendCollisions)
+            PhysicalCircleInformation circleInfo = info as PhysicalCircleInformation;
+            PhysicalBoxInformation boxInfo = info as PhysicalBoxInformation;
+            if (circleInfo != null)
             {
-                object node = this.Database.Insert(shape);
-                shape.OnInserted(this.Database, node);
+                return this.Create(circleInfo);
             }
-            if (shape.CanReceiveCollisions)
+            if (boxInfo != null)
             {
-                this.Receivers.Add(shape);
+                return this.Create(boxInfo);
             }
+            throw new ArgumentException("info");
         }
 
-        public void Remove(PhysicalShape shape)
+        public IPhysicalShape Create(PhysicalCircleInformation info)
         {
-            if (shape.CanSendCollisions)
-            {
-                shape.OnRemoved();
-            }
-            if (shape.CanReceiveCollisions)
-            {
-                this.Receivers.Remove(shape);
-            }
+            PhysicalCircle shape = new PhysicalCircle(this.database, info);
+            this.Insert(shape);
+            return shape;
         }
 
-        public void Query(PhysicalShape probe, IList<CollisionInformation> results)
+        public IPhysicalShape Create(PhysicalBoxInformation info)
         {
-            this.Database.Query(probe.Position, probe.HalfDimensions, this.candidates);
+            PhysicalAxisAlignedBox shape = new PhysicalAxisAlignedBox(this.database, info);
+            this.Insert(shape);
+            return shape;
+        }
+
+        public void Recycle(IPhysicalShape shape)
+        {
+            this.Remove((PhysicalShape)shape);
+        }
+
+        public void Clear()
+        {
+            // TODO
+        }
+
+        public void Query(IPhysicalShape probe, IList<CollisionInformation> results)
+        {
+            PhysicalShape shape = (PhysicalShape)probe;
+            this.database.Query(probe.Position, shape.HalfDimensions, this.candidates);
 
             foreach (PhysicalShape sender in this.candidates)
             {
@@ -53,7 +68,7 @@ namespace ThreeSheeps.Spritesse.Physics
                 if (sender == probe)
                     continue;
 
-                if (this.CheckCollision(sender, probe))
+                if (this.CheckCollision(sender, shape))
                 {
                     CollisionInformation info = new CollisionInformation();
                     info.Sender = sender;
@@ -66,18 +81,38 @@ namespace ThreeSheeps.Spritesse.Physics
 
         public override void Update(GameTime gameTime)
         {
-            foreach (PhysicalShape receiver in this.Receivers)
+            foreach (PhysicalShape receiver in this.receivers)
             {
                 receiver.CollisionList.Clear();
                 this.Query(receiver, receiver.CollisionList);
             }
         }
 
-        protected ICollisionDatabase Database { get { return this.database; } }
+        private void Insert(PhysicalShape shape)
+        {
+            if (shape.CanSendCollisions)
+            {
+                this.database.Insert(shape);
+            }
+            if (shape.CanReceiveCollisions)
+            {
+                this.receivers.Add(shape);
+            }
+        }
 
-        protected ISet<PhysicalShape> Receivers { get { return this.receivers; } }
+        private void Remove(PhysicalShape shape)
+        {
+            if (shape.CanSendCollisions)
+            {
+                this.database.Remove(shape);
+            }
+            if (shape.CanReceiveCollisions)
+            {
+                this.receivers.Remove(shape);
+            }
+        }
 
-        protected virtual bool CheckCollision(PhysicalShape shape1, PhysicalShape shape2)
+        private bool CheckCollision(PhysicalShape shape1, PhysicalShape shape2)
         {
             Type shape1Type = shape1.GetType();
             Type shape2Type = shape2.GetType();

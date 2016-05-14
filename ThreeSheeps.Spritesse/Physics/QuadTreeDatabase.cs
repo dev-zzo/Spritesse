@@ -8,7 +8,7 @@ namespace ThreeSheeps.Spritesse.Physics
     /// <summary>
     /// This implements the quad-tree spatial database.
     /// </summary>
-    public sealed class QuadTreeDatabase : ICollisionDatabase
+    internal sealed class QuadTreeDatabase : ICollisionDatabase
     {
         public QuadTreeDatabase(Vector2 initialRootPosition, float initialRootSize)
         {
@@ -17,34 +17,32 @@ namespace ThreeSheeps.Spritesse.Physics
 
         #region ICollisionDatabase implementation
 
-        public object Insert(PhysicalShape shape)
+        public void Insert(PhysicalShape shape)
         {
             // Ensure the object can fit into the current root.
             this.ExpandRoot(shape.Position, shape.HalfDimensions);
             // Insert it somewhere.
-            return this.Insert(shape, this.root);
+            shape.DatabaseInfo = this.Insert(shape, this.root);
         }
 
-        public object Update(PhysicalShape shape, object node)
+        public void Update(PhysicalShape shape)
         {
-            TreeNode actualNode = node as TreeNode;
+            TreeNode actualNode = shape.DatabaseInfo as TreeNode;
             // Check whether the object is still within the current node
-            if (ContainedIn(shape.Position, shape.HalfDimensions, actualNode.Center, actualNode.HalfSize))
+            if (!ContainedIn(shape.Position, shape.HalfDimensions, actualNode.Center, actualNode.HalfSize))
             {
-                return actualNode;
+                // If not, remove and insert it.
+                actualNode.Remove(shape);
+                this.Insert(shape);
+                this.Cleanup(actualNode);
             }
-
-            // If not, remove and insert it.
-            actualNode.Remove(shape);
-            object newNode = this.Insert(shape);
-            this.Cleanup(actualNode);
-            return newNode;
         }
 
-        public void Remove(PhysicalShape shape, object node)
+        public void Remove(PhysicalShape shape)
         {
-            TreeNode actualNode = node as TreeNode;
+            TreeNode actualNode = shape.DatabaseInfo as TreeNode;
             actualNode.Remove(shape);
+            shape.DatabaseInfo = null;
             this.Cleanup(actualNode);
         }
 
