@@ -10,14 +10,14 @@ namespace ThreeSheeps.Spritesse.Content
     public struct AnimationFrame
     {
         /// <summary>
+        /// Position within the sequence, in milliseconds
+        /// </summary>
+        public uint Position;
+
+        /// <summary>
         /// Index of a sprite in the sprite sheet
         /// </summary>
         public ushort SpriteIndex;
-
-        /// <summary>
-        /// Delay in milliseconds
-        /// </summary>
-        public ushort Delay;
     }
 
     /// <summary>
@@ -120,15 +120,13 @@ namespace ThreeSheeps.Spritesse.Content
             {
                 string name = input.ReadString();
                 bool looped = input.ReadBoolean();
+                uint totalTime = input.ReadUInt32();
                 int frameCount = input.ReadInt32();
-                uint totalTime = 0;
                 AnimationFrame[] frames = new AnimationFrame[frameCount];
                 for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex)
                 {
+                    frames[frameIndex].Position = input.ReadUInt32();
                     frames[frameIndex].SpriteIndex = input.ReadUInt16();
-                    ushort delay = input.ReadUInt16();
-                    frames[frameIndex].Delay = delay;
-                    totalTime += delay;
                 }
                 int eventCount = input.ReadInt32();
                 AnimationEvent[] events = new AnimationEvent[eventCount];

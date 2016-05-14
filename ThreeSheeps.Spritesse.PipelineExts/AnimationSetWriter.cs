@@ -12,27 +12,35 @@ namespace ThreeSheeps.Spritesse.PipelineExts
             output.Write(value.Animations.Length);
             foreach (AnimationSequence seq in value.Animations)
             {
-                output.Write(seq.Name);
-                output.Write(seq.Looped);
-                output.Write(seq.Frames.Length);
-                foreach (AnimationFrame frame in seq.Frames)
+                WriteSequence(output, seq);
+            }
+        }
+
+        private static void WriteSequence(ContentWriter output, AnimationSequence seq)
+        {
+            output.Write(seq.Name);
+            output.Write(seq.Looped);
+            output.Write(seq.TotalLength);
+            output.Write(seq.Frames.Length);
+            uint position = 0;
+            foreach (AnimationFrame frame in seq.Frames)
+            {
+                output.Write(position);
+                output.Write((ushort)frame.SpriteIndex);
+                position += frame.Delay;
+            }
+            if (seq.Events != null)
+            {
+                output.Write(seq.Events.Length);
+                foreach (AnimationEvent e in seq.Events)
                 {
-                    output.Write((ushort)frame.SpriteIndex);
-                    output.Write((ushort)frame.Delay);
+                    output.Write(e.Position);
+                    output.Write(e.Name);
                 }
-                if (seq.Events != null)
-                {
-                    output.Write(seq.Events.Length);
-                    foreach (AnimationEvent e in seq.Events)
-                    {
-                        output.Write(e.Position);
-                        output.Write(e.Name);
-                    }
-                }
-                else
-                {
-                    output.Write((int)0);
-                }
+            }
+            else
+            {
+                output.Write((int)0);
             }
         }
 

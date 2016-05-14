@@ -5,7 +5,7 @@ namespace ThreeSheeps.Spritesse.PipelineExts
     public sealed class AnimationFrame
     {
         public int SpriteIndex;
-        public float Delay;
+        public uint Delay;
     }
 
     public sealed class AnimationEvent
@@ -18,6 +18,8 @@ namespace ThreeSheeps.Spritesse.PipelineExts
     {
         public string Name;
         public bool Looped;
+        [ContentSerializerIgnore]
+        public uint TotalLength;
         public AnimationFrame[] Frames;
         [ContentSerializer(Optional = true)]
         public AnimationEvent[] Events;

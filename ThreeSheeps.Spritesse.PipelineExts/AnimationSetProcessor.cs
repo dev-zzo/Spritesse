@@ -10,7 +10,16 @@ namespace ThreeSheeps.Spritesse.PipelineExts
     {
         public override AnimationSetContent Process(AnimationSetContent input, ContentProcessorContext context)
         {
-            // NULL processor
+            foreach (AnimationSequence seq in input.Animations)
+            {
+                uint totalLength = 0;
+                foreach (AnimationFrame frame in seq.Frames)
+                {
+                    totalLength += frame.Delay;
+                }
+                seq.TotalLength = totalLength;
+            }
+
             return input;
         }
     }

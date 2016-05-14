@@ -152,46 +152,33 @@ namespace ThreeSheeps.Spritesse.Graphics
 
         private void UpdateAnimation(float elapsedTime)
         {
-            // Update elapsed frame time
             this.frameTimeElapsed += elapsedTime;
-            // Check the elapsed frame time against the current frame's delay
-            AnimationFrame[] frames = this.currentSequence.Frames;
-            int currentFrame = this.currentFrame;
-            float delay = (float)frames[currentFrame].Delay;
-            while (this.frameTimeElapsed > delay)
+            float totalTime = this.currentSequence.TotalTime;
+            if (this.frameTimeElapsed >= totalTime)
             {
-                // Subtract the delay and advance the frame counter
-                this.frameTimeElapsed -= delay;
-                int nextFrame = currentFrame + 1;
-                // Check whether we reached the end of animation sequence
-                if (nextFrame >= frames.Length)
+                if (this.currentSequence.Looped)
                 {
-                    // TODO: Fire an event?
-
-                    if (this.currentSequence.Looped)
+                    this.currentFrame = 0;
+                    while (this.frameTimeElapsed >= totalTime)
                     {
-                        // If the animation is looped, then simply reset the counter.
-                        currentFrame = 0;
-                    }
-                    else
-                    {
-                        // We are done playing.
-                        this.AnimationPlaying = false;
-                        break;
+                        this.frameTimeElapsed -= totalTime;
                     }
                 }
                 else
                 {
-                    // Advance to the next frame
-                    currentFrame = nextFrame;
+                    this.AnimationPlaying = false;
                 }
-                // We are not done, so update the delay to check the next frame
-                // This can happen if we skip animation frames due to update period being large.
-                delay = (float)frames[currentFrame].Delay;
             }
-            // Update the value
-            this.currentFrame = currentFrame;
-            this.spriteIndex = frames[currentFrame].SpriteIndex;
+
+            AnimationFrame[] frames = this.currentSequence.Frames;
+            for (int nextFrame = this.currentFrame; nextFrame < frames.Length; ++nextFrame)
+            {
+                if (frames[nextFrame].Position > this.frameTimeElapsed)
+                    break;
+                this.currentFrame = nextFrame;
+            }
+
+            this.spriteIndex = frames[this.currentFrame].SpriteIndex;
         }
 
         private void UpdateEvents(float elapsedTime)
