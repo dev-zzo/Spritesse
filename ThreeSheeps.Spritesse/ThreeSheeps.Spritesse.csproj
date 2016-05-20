@@ -83,6 +83,8 @@
     <Compile Include="Graphics\ISceneRendererService.cs" />
     <Compile Include="Graphics\SceneRenderContext.cs" />
     <Compile Include="Graphics\SceneRendererComponent.cs" />
+    <Compile Include="Input\InputManagerComponent.cs" />
+    <Compile Include="Input\IInputManagerService.cs" />
     <Compile Include="MathHelper.cs" />
     <Compile Include="Physics\CollisionCheckHelper.cs" />
     <Compile Include="Physics\CollisionResolverComponent.cs" />
